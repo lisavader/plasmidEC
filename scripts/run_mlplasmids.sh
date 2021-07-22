@@ -25,7 +25,7 @@ Rscript scripts/run_mlplasmids.R $strain ../../results/mlplasmids_predictions/${
 done
 }
 
-while getopts :i:f: flag; do
+while getopts :i: flag; do
 	case $flag in
 		i) path=$OPTARG;;
 	esac
