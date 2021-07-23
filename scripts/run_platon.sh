@@ -17,9 +17,9 @@ cd ../../results/platon_predictions
 #check whether input directory exists
 [ ! -d ../../$1 ] && exit 1
 #run platon on all strains in input directory
-for strain in ../../$1/*.fna
+for strain in ../../$1/*.fasta
 do
-name=$(basename $strain .fna)
+name=$(basename $strain .fasta)
 echo $name
 platon --db ../../databases/platon/db --output $name --threads 8 $strain
 done

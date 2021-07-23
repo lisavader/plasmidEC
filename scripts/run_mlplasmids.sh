@@ -17,9 +17,9 @@ run_mlplasmids(){
 #check whether input directory exists
 [ ! -d ../../$1 ] && exit 1
 #run mlplasmids on all strains in input directory
-for strain in ../../$1/*.fna
+for strain in ../../$1/*.fasta
 do
-name=$(basename $strain .fna)
+name=$(basename $strain .fasta)
 echo "Running mlplasmids on" $name
 Rscript scripts/run_mlplasmids.R $strain ../../results/mlplasmids_predictions/${name}.tsv 1e-5 'Escherichia coli'
 done
