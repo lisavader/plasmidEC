@@ -22,4 +22,11 @@ names(rfplasmid) <- c("contig_name","rfplasmid")
 ##Combine results
 combined <- full_join(full_join(mlplasmids,platon),full_join(rfplasmid,plascope))
 combined <- combined[, colSums(is.na(combined)) != nrow(combined)] #remove column of non-included tool
+combined$plasmid_count <- apply(combined, 1, function(x) length(which(x=="plasmid")))
 
+##Assign plasmid if called by more than one of the tools
+combined$classification <- "chromosome"
+combined$classification[combined$plasmid_count>1] <- "plasmid"
+
+##Write output file
+write.csv(combined,"../final_output.csv",row.names = FALSE)
