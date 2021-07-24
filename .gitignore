@@ -3,8 +3,7 @@ databases
 
 *_predictions
 
-<<<<<<< HEAD
-all_results.csv
+final_output.csv
+
 .Rproj.user
-=======
->>>>>>> dd62550d319bad4d77851a1a9c5d6f18aec6c1f3
+plasmidEC.Rproj
