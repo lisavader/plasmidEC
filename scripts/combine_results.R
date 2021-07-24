@@ -20,7 +20,7 @@ rfplasmid <- rfplasmid[,c(1,2)]
 names(rfplasmid) <- c("contig_name","rfplasmid")
 
 ##Combine results
-combined <- full_join(full_join(mlplasmids,platon),full_join(rfplasmid,plascope))
+combined <- merge(merge(mlplasmids,platon,all = TRUE),merge(rfplasmid,plascope, all = TRUE),all = TRUE)
 combined <- combined[, colSums(is.na(combined)) != nrow(combined)] #remove column of non-included tool
 combined$plasmid_count <- apply(combined, 1, function(x) length(which(x=="plasmid")))
 
