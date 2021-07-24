@@ -4,6 +4,7 @@
 rm -f ../results/all_results.csv
 
 ##MLPLASMIDS
+gather_mlplasmids(){
 for file in ../results/mlplasmids_predictions/*
 do
 tail -n +2 $file | while read line
@@ -13,8 +14,10 @@ contig=$(echo $line | cut -d' ' -f4 | sed 's/"//g')
 echo $contig,${prediction,,},mlplasmids >> ../results/all_results.csv
 done
 done
+}
 
 ##PLASCOPE
+gather_plascope(){
 cd ../results/plascope_predictions
 
 files=$(ls)
@@ -45,8 +48,10 @@ cd ..
 done
 
 cd ..
+}
 
 ##PLATON
+gather_platon(){
 cd ../results/platon_predictions
 
 files=$(ls)
@@ -71,8 +76,10 @@ cd ..
 done
 
 cd ..
+}
 
 #RFPLASMID
+gather_rfplasmid(){
 dir=$(ls -Art ../results/rfplasmid_predictions | tail -n 1)
 tail -n +2 ../results/rfplasmid_predictions/$dir/prediction.csv | while read line
 do
@@ -83,3 +90,28 @@ else
 echo $contig,"chromosome","rfplasmid" >> ../results/all_results.csv
 fi
 done
+}
+
+while getopts :t: flag; do
+	case $flag in
+		t) tools=$OPTARG;;
+	esac
+done
+
+#check if input is present
+[ -z $tools ] && exit 1
+
+if [[ $tools = *"mlplasmids"* ]]; then
+	gather_mlplasmids
+fi
+
+if [[ $tools = *"plascope"* ]]; then
+	gather_plascope
+fi
+if [[ $tools = *"platon"* ]]; then
+	gather_platon
+fi
+if [[ $tools = *"rfplasmid"* ]]; then
+	gather_rfplasmid
+fi
+
