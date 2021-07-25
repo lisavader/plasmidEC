@@ -20,7 +20,7 @@ cd ../../results/platon_predictions
 for strain in ../../$1/*.fasta
 do
 name=$(basename $strain .fasta)
-echo $name
+echo "Running platon on" $name
 platon --db ../../databases/platon/db --output $name --threads 8 $strain
 done
 }
