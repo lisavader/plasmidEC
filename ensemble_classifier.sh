@@ -1,3 +1,4 @@
+#!/bin/bash
 
 #input your own conda path here! -->
 source /home/dla_mm/lvader/data/miniconda3/etc/profile.d/conda.sh
@@ -13,9 +14,10 @@ while getopts :i:t: flag; do
 	esac
 done
 
-#if flags are not present, write message and quit
+#if flags are not present or input is incorrect, write message and quit
 [ -z $path ] && echo "Please provide the path to your input folder with -i" && exit 1 
 [ -z $tools ] && echo "Please provide the names of the tools you want to use with -t" && exit 1
+[ ! -d ../$path ] && echo "The input folder does not exist." && exit 1
 
 #save list of conda envs already existing
 envs=$(conda env list | awk '{print $1}' )
@@ -28,6 +30,7 @@ fi
 if [[ $tools = *"plascope"* ]]; then
 	if ! [[ $envs = *"plascope"* ]]; then
 		conda create --name plascope -c bioconda/label/cf201901 plascope
+	fi
 	conda activate plascope
 	bash run_plascope.sh -i $path
 fi
@@ -35,6 +38,7 @@ fi
 if [[ $tools = *"platon"* ]]; then
 	if ! [[ $envs = *"platon"* ]]; then
 		conda create --name platon -c bioconda platon
+	fi
 	conda activate platon
 	bash run_platon.sh -i $path
 fi
@@ -42,8 +46,11 @@ fi
 if [[ $tools = *"rfplasmid"* ]]; then
 	if ! [[ $envs = *"rfplasmid"* ]]; then
 		conda create --name rfplasmid -c bioconda rfplasmid
+		conda activate rfplasmid
+		rfplasmid --initialize
+	fi
 	conda activate rfplasmid
-	bash run_plascope.sh -i $path
+	bash run_rfplasmid.sh -i $path
 fi
 
 #gather and combine results
