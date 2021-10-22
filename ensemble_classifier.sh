@@ -74,5 +74,7 @@ fi
 #gather and combine results
 conda activate r_codes_ec_lv
 bash gather_results.sh -t $tools
+#create a directory for the gplas output format
+mkdir ../results_gplas_format
 Rscript combine_results.R ../$path
 
