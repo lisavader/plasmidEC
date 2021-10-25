@@ -2,12 +2,10 @@ library(plyr)
 library(Biostrings)
 library(dplyr)
 
-#setwd('/home/jpaganini/UMC_PhD/ensemble_classifier_test/scripts')
-
 ##get the directory which contains the fasta files from the arguments on the command line.
-input_directory = commandArgs(trailingOnly=TRUE)
-
-#input_directory='../data'
+arguments = commandArgs(trailingOnly=TRUE)
+input_directory=arguments[1]
+output_directory=arguments[2]
 
 #list all the fasta files in the input directory
 all_files=list.files(path=input_directory)
@@ -26,7 +24,8 @@ for (genomes in all_files) {
 }
 
 ##Load results
-all_results <- read.csv("../results/all_results.csv", header = FALSE)
+all_results_path<-paste("../",output_directory,"/all_results.csv",sep='')
+all_results <- read.csv(all_results_path, header = FALSE)
 names(all_results) <- c("Contig_name","prediction","software","genome_id")
 
 ##Process each software
@@ -60,7 +59,8 @@ combined$classification <- "chromosome"
 combined$classification[combined$plasmid_count>1] <- "plasmid"
 
 ##Write output file
-write.csv(combined,"../final_output.csv",row.names = FALSE)
+combined_path<-paste('../',output_directory,'/final_output.csv',sep='')
+write.csv(combined,combined_path,row.names = FALSE)
 
 ##write gplas output
 gplas_output<-combined
@@ -91,7 +91,7 @@ for (genome in strain_names_list) {
   individual_gplas_ordered<-individual_gplas[,c(8,9,7,1)]
   names(individual_gplas_ordered)<-c('Prob_Chromosome','Prob_Plasmid','Prediction','Contig_name')
   individual_gplas_ordered<-join(individual_gplas_ordered,contig_lengths)
-  output_path<-paste('../results_gplas_format/',genome,'_plasmid_prediction.tab',sep='')
+  output_path<-paste('../',output_directory,'/results_gplas_format/',genome,'_plasmid_prediction.tab',sep='')
   write.table(individual_gplas_ordered,output_path,row.names = FALSE, sep='\t')
 }
 

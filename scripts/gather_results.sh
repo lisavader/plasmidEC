@@ -1,24 +1,36 @@
 #!/bin/bash
 
+while getopts :t:o: flag; do
+        case $flag in
+                t) tools=$OPTARG;;
+		o) output_directory=$OPTARG;;
+        esac
+done
+
+#check if input is present
+[ -z $tools ] && exit 1
+[ -z ../$output_directory ] && exit 1
+
 #delete previous output file
-rm -f ../results/all_results.csv
+rm -f ../$output_directory/all_results.csv
 
 ##MLPLASMIDS
 gather_mlplasmids(){
-for file in ../results/mlplasmids_predictions/*
+file_list=$(ls ../$output_directory/mlplasmids_predictions/ | sed 's/.tsv//g')
+for file in $file_list
 do
-tail -n +2 $file | while read line
+tail -n +2 ../$output_directory/mlplasmids_predictions/$file.tsv | while read line
 do
 prediction=$(echo $line | cut -d' ' -f3 | sed 's/"//g')
 contig=$(echo $line | cut -d' ' -f4 | sed 's/"//g')
-echo $contig,${prediction,,},mlplasmids >> ../results/${file}_all_results.csv
+echo $contig,${prediction,,},mlplasmids >> ../$output_directory/${file}_all_results.csv
 done
 done
 }
 
 ##PLASCOPE
 gather_plascope(){
-cd ../results/plascope_predictions
+cd ../$output_directory/plascope_predictions
 
 files=$(ls | sed 's/_PlaScope//g')
 for file in $files
@@ -52,7 +64,7 @@ cd ..
 
 ##PLATON
 gather_platon(){
-cd ../results/platon_predictions
+cd ../$output_directory/platon_predictions
 
 files=$(ls)
 for file in $files
@@ -80,27 +92,19 @@ cd ..
 
 #RFPLASMID
 gather_rfplasmid(){
-dir=$(ls -Art ../results/rfplasmid_predictions | tail -n 1)
-tail -n +2 ../results/rfplasmid_predictions/$dir/prediction.csv | while read line
+dir=$(ls -Art ../$output_directory/rfplasmid_predictions | tail -n 1)
+tail -n +2 ../$output_directory/rfplasmid_predictions/$dir/prediction.csv | while read line
 do
 file=$(echo $line | cut -f 1 -d ',' | awk -F '_' 'BEGIN { OFS = FS }; NF { NF -= 1 }; 1' | sed 's/"//g')
 contig=$(echo $line | cut -d, -f5 | sed 's/"//g')
 if [[ $line = *'"p"'* ]]; then
-echo $contig,"plasmid","rfplasmid" >> ../results/${file}_all_results.csv
+echo $contig,"plasmid","rfplasmid" >> ../$output_directory/${file}_all_results.csv
 else
-echo $contig,"chromosome","rfplasmid" >> ../results/${file}_all_results.csv
+echo $contig,"chromosome","rfplasmid" >> ../$output_directory/${file}_all_results.csv
 fi
 done
 }
 
-while getopts :t: flag; do
-	case $flag in
-		t) tools=$OPTARG;;
-	esac
-done
-
-#check if input is present
-[ -z $tools ] && exit 1
 
 if [[ $tools = *"mlplasmids"* ]]; then
 	gather_mlplasmids
@@ -117,6 +121,6 @@ if [[ $tools = *"rfplasmid"* ]]; then
 fi
 
 #gather all outputs
-cd ../results
+cd ../$output_directory
 files=$(ls *all_results.csv | sed 's/_all_results.csv//g')
 for file in $files; do cat ${file}_all_results.csv | sed "s/$/\,$file/g" >> all_results.csv; done
