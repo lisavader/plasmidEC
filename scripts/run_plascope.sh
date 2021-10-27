@@ -1,7 +1,18 @@
 #!/bin/bash
 
+while getopts :i:o: flag; do
+        case $flag in
+                i) path=$OPTARG;;
+                o) output_directory=$OPTARG;;
+        esac
+done
+
+#check if the output directory exists
+[ -z $output_directory ] && exit 1
+[ -z $path ] && exit 1
+
 #make results directory
-mkdir -p ../results/plascope_predictions
+mkdir -p ../$output_directory/plascope_predictions
 
 #download E. coli database
 mkdir -p ../databases/plascope
@@ -13,7 +24,7 @@ if [[ ! -f chromosome_plasmid_db.3.cf ]]; then
 fi
 
 run_plascope(){
-cd ../../results/plascope_predictions
+cd ../../$2/plascope_predictions
 #check whether input directory exists
 [ ! -d ../../$1 ] && exit 1
 #run plascope on all strains in input directory
@@ -24,13 +35,4 @@ plaScope.sh --fasta $strain -o . --db_dir ../../databases/plascope --db_name chr
 done
 }
 
-while getopts :i: flag; do
-	case $flag in
-		i) path=$OPTARG;;
-	esac
-done
-
-#check if input is present
-[ -z $path ] && exit 1
-
-run_plascope $path
+run_plascope $path $output_directory

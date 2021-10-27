@@ -1,7 +1,18 @@
 #!/bin/bash
 
+while getopts :i:o: flag; do
+        case $flag in
+                i) path=$OPTARG;;
+                o) output_directory=$OPTARG;;
+        esac
+done
+
+#check if the output directory exists
+[ -z $output_directory ] && exit 1
+[ -z $path ] && exit 1
+
 #make results directory
-mkdir -p ../results/platon_predictions
+mkdir -p ../$output_directory/platon_predictions
 
 #download database
 mkdir -p ../databases/platon
@@ -13,7 +24,7 @@ if [[ ! -d db ]]; then
 fi
 
 run_platon(){
-cd ../../results/platon_predictions
+cd ../../$2/platon_predictions
 #check whether input directory exists
 [ ! -d ../../$1 ] && exit 1
 #run platon on all strains in input directory
@@ -25,13 +36,4 @@ platon --db ../../databases/platon/db --output $name --threads 8 $strain
 done
 }
 
-while getopts :i: flag; do
-	case $flag in
-		i) path=$OPTARG;;
-	esac
-done
-
-#check if input is present
-[ -z $path ] && exit 1
-
-run_platon $path
+run_platon $path $output_directory
