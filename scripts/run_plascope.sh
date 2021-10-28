@@ -7,7 +7,7 @@ while getopts :i:o: flag; do
         esac
 done
 
-#check if the output directory exists
+#check if input and output is provided
 [ -z $output_directory ] && exit 1
 [ -z $path ] && exit 1
 
@@ -24,11 +24,13 @@ if [[ ! -f chromosome_plasmid_db.3.cf ]]; then
 fi
 
 run_plascope(){
-cd ../../$2/plascope_predictions
+path=$1
+output_directory=$2
+cd ../../$output_directory/plascope_predictions
 #check whether input directory exists
-[ ! -d ../../$1 ] && exit 1
+[ ! -d ../../$path ] && exit 1
 #run plascope on all strains in input directory
-for strain in ../../$1/*.fasta
+for strain in ../../$path/*.fasta
 do
 name=$(basename $strain .fasta)
 plaScope.sh --fasta $strain -o . --db_dir ../../databases/plascope --db_name chromosome_plasmid_db --sample $name

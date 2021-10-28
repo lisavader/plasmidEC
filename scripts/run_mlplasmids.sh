@@ -7,7 +7,7 @@ while getopts :i:o: flag; do
         esac
 done
 
-#check if the output directory exists
+#check if input and output is provided
 [ -z $output_directory ] && exit 1
 [ -z $path ] && exit 1
 
@@ -26,14 +26,16 @@ fi
 cd mlplasmids
 
 run_mlplasmids(){
+path=$1
+output_directory=$2
 #check whether input directory exists
-[ ! -d ../../$1 ] && exit 1
+[ ! -d ../../$path ] && exit 1
 #run mlplasmids on all strains in input directory
-for strain in ../../$1/*.fasta
+for strain in ../../$path/*.fasta
 do
 name=$(basename $strain .fasta)
 echo "Running mlplasmids on" $name
-Rscript scripts/run_mlplasmids.R $strain ../../$2/mlplasmids_predictions/${name}.tsv 0.5 'Escherichia coli'
+Rscript scripts/run_mlplasmids.R $strain ../../${output_directory}/mlplasmids_predictions/${name}.tsv 0.5 'Escherichia coli'
 done
 }
 
