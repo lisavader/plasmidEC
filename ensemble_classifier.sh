@@ -21,8 +21,22 @@ done
 [ -z $output_directory ] && echo "Please provide the name of the output directory" && exit 1
 [ ! -d ../$path ] && echo "The input folder does not exist." && exit 1
 
-#create output directory
-mkdir ../$output_directory
+#create output directory, ask to overwrite if it already exists
+if [[ -d ../$output_directory ]]; then
+	read -r -p "This output directory already exists. Do you want to overwrite? [Y/n] " response
+	case $response in 
+	[nN][oO]|[nN])
+		echo "Aborted." && exit 1
+		;;
+ 	*)
+		echo "Directory will be overwritten."	
+		rm -r ../$output_directory
+		mkdir ../$output_directory
+		;;
+	esac	
+else
+	mkdir ../$output_directory
+fi
 
 #save list of conda envs already existing
 envs=$(conda env list | awk '{print $1}' )
