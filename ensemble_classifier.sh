@@ -52,12 +52,7 @@ fi
 #run specified tools, create conda env if not yet existing
 if [[ $tools = *"mlplasmids"* ]]; then
 	if ! [[ $envs = *"mlplasmids_ec_lv"* ]]; then
-		conda create --name mlplasmids_ec_lv r=3.4.1
-		conda activate mlplasmids_ec_lv
-		#for sucessful installation of R 3.4.1 in the HPC, I had to also install libiconv
-		conda install -c conda-forge libiconv=1.16
-		conda install bioconductor-biostrings=2.46.0
-		conda install r-devtools r-kernlab r-seqinr r-mlr
+		conda env create --file=../yml/mlplasmids_ec_lv.yml
 	fi
 	conda activate mlplasmids_ec_lv
 	bash run_mlplasmids.sh -i $path -o $output_directory
