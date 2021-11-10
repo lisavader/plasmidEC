@@ -44,6 +44,7 @@ envs=$(conda env list | awk '{print $1}' )
 #create an environment for running r codes
 if ! [[ $envs = *"r_codes_ec_lv"* ]]; then
 	conda create --name r_codes_ec_lv r=4.1
+	conda activate r_codes_ec_lv
 	conda install -c bioconda bioconductor-biostrings=2.60.0
 	conda install -c conda-forge r-plyr=1.8.6
 	conda install -c conda-forge r-dplyr=1.0.7
