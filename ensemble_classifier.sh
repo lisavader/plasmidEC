@@ -7,11 +7,12 @@ source ~/data/miniconda3/etc/profile.d/conda.sh
 cd scripts
 
 #process flags provided
-while getopts :i:t:o: flag; do
+while getopts :i:t:o:f flag; do
 	case $flag in
 		i) path=$OPTARG;;
 		t) tools=$OPTARG;;
                 o) output_directory=$OPTARG;;
+		f) force='true'
 	esac
 done
 
@@ -21,19 +22,15 @@ done
 [ -z $output_directory ] && echo "Please provide the name of the output directory" && exit 1
 [ ! -d ../$path ] && echo "The input folder does not exist." && exit 1
 
-#create output directory, ask to overwrite if it already exists
+#create output directory
 if [[ -d ../$output_directory ]]; then
-	read -r -p "This output directory already exists. Do you want to overwrite? [Y/n] " response
-	case $response in 
-	[nN][oO]|[nN])
-		echo "Aborted." && exit 1
-		;;
- 	*)
-		echo "Directory will be overwritten."	
+	if [[ $force = 'true' ]]; then
+		echo "Output directory will be overwritten."	
 		rm -r ../$output_directory
 		mkdir ../$output_directory
-		;;
-	esac	
+	else
+		printf "Output directory already exists.\nIf you want to overwrite this directory use the force option (-f).\n" && exit 1
+	fi	
 else
 	mkdir ../$output_directory
 fi
