@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#input your own conda path here! -->
-source ~/data/miniconda3/etc/profile.d/conda.sh
+#load user's conda base environment
+CONDA_PATH=$(conda info | grep -i 'base environment' | awk '{print $4}')
+source $CONDA_PATH/etc/profile.d/conda.sh
 
 #move to scripts directory
 cd scripts
