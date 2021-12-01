@@ -59,7 +59,7 @@ combined$classification <- "chromosome"
 combined$classification[combined$plasmid_count>1] <- "plasmid"
 
 ##Write output file
-combined_path<-paste('../',output_directory,'/final_output.csv',sep='')
+combined_path<-paste('../',output_directory,'/plasmidEC_output.csv',sep='')
 write.csv(combined,combined_path,row.names = FALSE)
 
 ##write gplas output
