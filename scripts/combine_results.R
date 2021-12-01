@@ -24,7 +24,7 @@ for (genomes in all_files) {
 }
 
 ##Load results
-all_results_path<-paste("../",output_directory,"/all_results.csv",sep='')
+all_results_path<-paste("../",output_directory,"/all_predictions.csv",sep='')
 all_results <- read.csv(all_results_path, header = FALSE)
 names(all_results) <- c("Contig_name","prediction","software","genome_id")
 
