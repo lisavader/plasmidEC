@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#if no tools combination is given, run with default
+tools='platon,plascope,rfplasmid'
+
 #load user's conda base environment
 CONDA_PATH=$(conda info | grep -i 'base environment' | awk '{print $4}')
 source $CONDA_PATH/etc/profile.d/conda.sh
@@ -17,9 +20,8 @@ while getopts :i:t:o:f flag; do
 	esac
 done
 
-#if flags are not present or input is incorrect, write message and quit
+#if input or output flags are not present or input is incorrect, write message and quit
 [ -z $path ] && echo "Please provide the path to your input folder with -i" && exit 1 
-[ -z $tools ] && echo "Please provide the names of the tools you want to use with -t" && exit 1
 [ -z $output_directory ] && echo "Please provide the name of the output directory" && exit 1
 [ ! -d ../$path ] && echo "The input folder does not exist." && exit 1
 
