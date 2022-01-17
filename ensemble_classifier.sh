@@ -11,18 +11,19 @@ source $CONDA_PATH/etc/profile.d/conda.sh
 cd scripts
 
 #process flags provided
-while getopts :i:t:o:f flag; do
+while getopts :i:t:o:fg flag; do
 	case $flag in
 		i) path=$OPTARG;;
 		t) tools=$OPTARG;;
                 o) output_directory=$OPTARG;;
-		f) force='true'
+		f) force='true';;
+		g) gplas_output='true'
 	esac
 done
 
 #if input or output flags are not present or input is incorrect, write message and quit
-[ -z $path ] && echo "Please provide the path to your input folder with -i" && exit 1 
-[ -z $output_directory ] && echo "Please provide the name of the output directory" && exit 1
+[ -z $path ] && echo "Please provide the path to your input folder (-i)" && exit 1 
+[ -z $output_directory ] && echo "Please provide the name of the output directory (-o)" && exit 1
 [ ! -d ../$path ] && echo "The input folder does not exist." && exit 1
 
 #create output directory
@@ -88,7 +89,11 @@ fi
 #gather and combine results
 conda activate r_codes_ec_lv
 bash gather_results.sh -t $tools -o $output_directory
-#create a directory for the gplas output format
-mkdir ../$output_directory/results_gplas_format
-Rscript combine_results.R ../$path $output_directory
+Rscript combine_results.R $output_directory
 
+#put results in gplas format
+if [[ $gplas_output = 'true' ]]; then
+	#create a directory for the gplas output format
+	mkdir ../$output_directory/results_gplas_format
+	Rscript get_gplas_output.R ../$path $output_directory
+fi
