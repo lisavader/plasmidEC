@@ -1,27 +1,29 @@
 #!/bin/bash
 
-while getopts :i:o: flag; do
+while getopts :i:o:t: flag; do
         case $flag in
-                i) path=$OPTARG;;
-                o) output_directory=$OPTARG;;
+                i) input=$OPTARG;;
+                o) out_dir=$OPTARG;;
+		t) threads=$OPTARG;;
         esac
 done
 
 #check if input and output is provided
-[ -z $output_directory ] && exit 1
-[ -z $path ] && exit 1
+[ -z $out_dir ] && exit 1
+[ -z $input ] && exit 1
 
 #create output directory
-mkdir -p ../$output_directory/rfplasmid_predictions
+mkdir -p ../$out_dir/rfplasmid_predictions
 
 run_rfplasmid(){
 path=$1
 output_directory=$2
-cd ../$output_directory/rfplasmid_predictions
+threads=$3
+cd ../$out_dir/rfplasmid_predictions
 #check whether input directory exists
-[ ! -d ../../$path ] && exit 1
+[ ! -d ../../$input ] && exit 1
 #run rfplasmid
-rfplasmid --species Enterobacteriaceae --input ../../$path --jelly --threads 8
+rfplasmid --species Enterobacteriaceae --input ../../$input --jelly --threads $threads
 }
 
-run_rfplasmid $path $output_directory
+run_rfplasmid $input $out_dir $threads

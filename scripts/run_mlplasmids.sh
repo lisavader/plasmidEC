@@ -2,18 +2,13 @@
 
 while getopts :i:o: flag; do
         case $flag in
-                i) path=$OPTARG;;
-                o) output_directory=$OPTARG;;
+                i) input=$OPTARG;;
+                o) out_dir=$OPTARG;;
         esac
 done
 
-#check if input and output is provided
-[ -z $output_directory ] && exit 1
-[ -z $path ] && exit 1
-
-
 #create output directory
-mkdir -p ../$output_directory/mlplasmids_predictions
+mkdir -p ../$out_dir/mlplasmids_output
 
 #clone mlplasmids
 mkdir -p ../tools
@@ -26,17 +21,17 @@ fi
 cd mlplasmids
 
 run_mlplasmids(){
-path=$1
-output_directory=$2
+input=$1
+out_dir=$2
 #check whether input directory exists
-[ ! -d ../../$path ] && exit 1
+[ ! -d ../../$input ] && exit 1
 #run mlplasmids on all strains in input directory
-for strain in ../../$path/*.fasta
+for strain in ../../$input/*.fasta
 do
 name=$(basename $strain .fasta)
 echo "Running mlplasmids on" $name
-Rscript scripts/run_mlplasmids.R $strain ../../${output_directory}/mlplasmids_predictions/${name}.tsv 0.5 'Escherichia coli'
+Rscript scripts/run_mlplasmids.R $strain ../../${out_dir}/mlplasmids_predictions/${name}.tsv 0.5 'Escherichia coli'
 done
 }
 
-run_mlplasmids $path $output_directory
+run_mlplasmids $input $out_dir
