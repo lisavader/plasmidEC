@@ -8,7 +8,7 @@ input_path=arguments[1]
 output_directory=arguments[2]
 
 #load results file
-combined_path<-paste(output_directory,'/plasmidEC_output.csv',sep='')
+combined_path<-paste(output_directory,'/ensemble_output.csv',sep='')
 combined <- read.csv(combined_path)
 
 ##write gplas output

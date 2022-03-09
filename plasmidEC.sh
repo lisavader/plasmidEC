@@ -115,11 +115,11 @@ if [[ $gplas_output = 'true' ]]; then
 	#create a directory for the gplas output format
 	mkdir $out_dir/gplas_format
 	echo "Writing gplas output..."
-	Rscript scripts/get_gplas_output.R $input $out_dir
+	Rscript scripts/write_gplas_output.R $input $out_dir
 fi
 
 #write fasta file with plasmid contigs
 echo "Writing plasmid contigs..."
 bash scripts/write_plasmid_contigs.sh -i $input -o $out_dir
 
-[ -f $out_dir/plasmidEC_output.csv ] && echo "PlasmidEC finished. Output can be found in $out_dir" && exit 0
+[ -f $out_dir/ensemble_output.csv ] && echo "PlasmidEC finished. Output can be found in $out_dir" && exit 0
