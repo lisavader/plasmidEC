@@ -113,7 +113,7 @@ Rscript scripts/combine_results.R $out_dir
 #put results in gplas format
 if [[ $gplas_output = 'true' ]]; then	
 	#create a directory for the gplas output format
-	mkdir $out_dir/results_gplas_format
+	mkdir $out_dir/gplas_format
 	echo "Writing gplas output..."
 	Rscript scripts/get_gplas_output.R $input $out_dir
 fi
@@ -122,4 +122,4 @@ fi
 echo "Writing plasmid contigs..."
 bash scripts/write_plasmid_contigs.sh -i $input -o $out_dir
 
-[ -f $out_dir/plasmidEC_output.csv ] && echo "All done! Output can be found in $out_dir" && exit 0
+[ -f $out_dir/plasmidEC_output.csv ] && echo "PlasmidEC finished. Output can be found in $out_dir" && exit 0
