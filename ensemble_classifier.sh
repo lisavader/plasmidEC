@@ -94,7 +94,7 @@ fi
 
 #gather and combine results
 echo "Gathering results..."
-bash scripts/gather_results.sh -t $tools -o $out_dir
+bash scripts/gather_results.sh -i $input -t $tools -o $out_dir
 
 #create an environment for running r codes
 if ! [[ $envs = *"r_codes_ec_lv"* ]]; then
@@ -117,5 +117,9 @@ if [[ $gplas_output = 'true' ]]; then
 	echo "Writing gplas output..."
 	Rscript scripts/get_gplas_output.R $input $out_dir
 fi
+
+#write fasta file with plasmid contigs
+echo "Writing plasmid contigs..."
+bash scripts/write_plasmid_contigs.sh -i $input -o $out_dir
 
 [ -f $out_dir/plasmidEC_output.csv ] && echo "All done! Output can be found in $out_dir" && exit 0

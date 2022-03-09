@@ -36,7 +36,7 @@ if("mlplasmids" %in% colnames(combined)) {
 ##Assign plasmid if called by more than one of the tools
 combined$Plasmid_count <- apply(combined, 1, function(x) length(which(x=="plasmid")))
 combined$Combined_prediction <- "chromosome"
-combined$Combined_prediction[combined$plasmid_count>1] <- "plasmid"
+combined$Combined_prediction[combined$Plasmid_count>1] <- "plasmid"
 
 ##Write output file
 combined_path<-paste(output_directory,'/plasmidEC_output.csv',sep='')

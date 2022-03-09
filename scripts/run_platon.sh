@@ -29,7 +29,7 @@ threads=$3
 cd ../..
 
 #run platon on input file
-echo "Running platon..."
+echo "Running Platon..."
 name=$(basename $input .fasta)
 platon --db databases/platon/db --output $out_dir/platon_output/$name --threads $threads $input
 }
