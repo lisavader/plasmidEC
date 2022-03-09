@@ -9,12 +9,13 @@ while getopts :i:o:t: flag; do
 done
 
 #make results directory
-mkdir -p ../$out_dir/platon_predictions
+mkdir -p $out_dir/platon_output
 
 #download database
-mkdir -p ../databases/platon
-cd ../databases/platon
+mkdir -p databases/platon
+cd databases/platon
 if [[ ! -d db ]]; then
+	echo "Downloading Platon database..."
 	wget https://zenodo.org/record/4066768/files/db.tar.gz
 	tar -xzf db.tar.gz
 	rm db.tar.gz
@@ -25,18 +26,12 @@ input=$1
 out_dir=$2
 threads=$3
 
-cd ../../$out_dir/platon_predictions
+cd ../..
 
-#check whether input directory exists
-[ ! -d ../../$input ] && exit 1
-
-#run platon on all strains in input directory
-for strain in ../../$input/*.fasta
-do
-name=$(basename $strain .fasta)
-echo "Running platon on" $name
-platon --db ../../databases/platon/db --output $name --threads $threads $strain
-done
+#run platon on input file
+echo "Running platon..."
+name=$(basename $input .fasta)
+platon --db databases/platon/db --output $out_dir/platon_output/$name --threads $threads $input
 }
 
 run_platon $input $out_dir $threads

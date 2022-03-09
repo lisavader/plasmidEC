@@ -8,30 +8,27 @@ while getopts :i:o: flag; do
 done
 
 #create output directory
-mkdir -p ../$out_dir/mlplasmids_output
+mkdir -p $out_dir/mlplasmids_output
 
 #clone mlplasmids
-mkdir -p ../tools
-cd ../tools
+mkdir -p tools
+cd tools
 if [[ ! -d mlplasmids ]]; then
+	echo "Cloning mlplasmids into tools..."
 	git clone https://gitlab.com/sirarredondo/mlplasmids.git
-else
-	echo "Mlplasmids is already installed."
+else 
+	echo "Found mlplasmids installation."
 fi
 cd mlplasmids
 
 run_mlplasmids(){
 input=$1
 out_dir=$2
-#check whether input directory exists
-[ ! -d ../../$input ] && exit 1
-#run mlplasmids on all strains in input directory
-for strain in ../../$input/*.fasta
-do
-name=$(basename $strain .fasta)
-echo "Running mlplasmids on" $name
-Rscript scripts/run_mlplasmids.R $strain ../../${out_dir}/mlplasmids_predictions/${name}.tsv 0.5 'Escherichia coli'
-done
+
+#run mlplasmids on input file
+echo "Running mlplasmids..."
+name=$(basename $input .fasta)
+Rscript scripts/run_mlplasmids.R ../../$input ../../${out_dir}/mlplasmids_output/${name}.tsv 0.5 'Escherichia coli'
 }
 
 run_mlplasmids $input $out_dir

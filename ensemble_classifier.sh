@@ -8,13 +8,6 @@ threads=8
 force='false'
 gplas_output='false'
 
-#load user's conda base environment
-CONDA_PATH=$(conda info | grep -i 'base environment' | awk '{print $4}')
-source $CONDA_PATH/etc/profile.d/conda.sh || echo "Error: Unable to load conda base environment. Is conda installed?" || exit 1
-
-#move to scripts directory
-cd scripts
-
 #process flags provided
 while getopts :i:t:o:fgtv flag; do
 	case $flag in
@@ -28,25 +21,34 @@ while getopts :i:t:o:fgtv flag; do
 	esac
 done
 
+#start plasmidEC
+printf "PlasmidEC v. $version.\nUsing binary classifiers: $tools.\n"
+
+#load user's conda base environment
+CONDA_PATH=$(conda info | grep -i 'base environment' | awk '{print $4}')
+source $CONDA_PATH/etc/profile.d/conda.sh || echo "Error: Unable to load conda base environment. Is conda installed?" || exit 1
+
 #if input or output flags are not present or input is incorrect, write message and quit
 [ -z $input ] && echo "Please provide the path to your input folder (-i)" && exit 1 
 [ -z $out_dir ] && echo "Please provide the name of the output directory (-o)" && exit 1
-[ ! -d ../$input ] && echo "No file found at $input" && exit 1
+
+if [[ $input == *.fasta ]]; then
+	echo "Found input file at $input"
+else
+	echo "Error: No .fasta file found at $input" && exit 1
+fi
 
 #create output directory
-if [[ -d ../$out_dir ]]; then
+if [[ -d $out_dir ]]; then
 	if [[ $force = 'true' ]]; then	
-		rm -r ../$out_dir
-		mkdir ../$out_dir
+		rm -r $out_dir
+		mkdir $out_dir
 	else
 		printf "Output directory already exists: $out_dir\nUse the force option (-f) to overwrite.\n" && exit 1
 	fi	
 else
-	mkdir ../$out_dir
+	mkdir $out_dir
 fi
-
-#start plasmidEC
-printf "PlasmidEC v. $version.\nUsing binary classifiers: $tools.\n"
 
 #save list of conda envs already existing
 envs=$(conda env list | awk '{print $1}' )
@@ -58,7 +60,7 @@ if [[ $tools = *"mlplasmids"* ]]; then
 		conda env create --file=../yml/mlplasmids_ec_lv.yml
 	fi
 	conda activate mlplasmids_ec_lv
-	bash run_mlplasmids.sh -i $input -o $out_dir
+	bash scripts/run_mlplasmids.sh -i $input -o $out_dir
 fi
 
 if [[ $tools = *"plascope"* ]]; then
@@ -67,7 +69,7 @@ if [[ $tools = *"plascope"* ]]; then
 		conda create --name plascope_ec_lv -c bioconda/label/cf201901 plascope
 	fi
 	conda activate plascope_ec_lv
-	bash run_plascope.sh -i $input -o $out_dir -t $threads
+	bash scripts/run_plascope.sh -i $input -o $out_dir -t $threads
 fi
 
 if [[ $tools = *"platon"* ]]; then
@@ -76,7 +78,7 @@ if [[ $tools = *"platon"* ]]; then
 		conda create --name platon_ec_lv -c bioconda platon=1.6
 	fi
 	conda activate platon_ec_lv
-	bash run_platon.sh -i $input -o $out_dir -t $threads
+	bash scripts/run_platon.sh -i $input -o $out_dir -t $threads
 fi
 
 if [[ $tools = *"rfplasmid"* ]]; then
@@ -87,27 +89,33 @@ if [[ $tools = *"rfplasmid"* ]]; then
 		rfplasmid --initialize
 	fi
 	conda activate rfplasmid_ec_lv
-	bash run_rfplasmid.sh -i $input -o $out_dir -t $threads
+	bash scripts/run_rfplasmid.sh -i $input -o $out_dir -t $threads
 fi
 
 #gather and combine results
+echo "Gathering results..."
+bash scripts/gather_results.sh -t $tools -o $out_dir
+
+#create an environment for running r codes
+if ! [[ $envs = *"r_codes_ec_lv"* ]]; then
+	echo "Creating conda environment r_codes_ec_lv..."
+	conda create --name r_codes_ec_lv r=4.1	
+	conda activate r_codes_ec_lv
+	conda install -c bioconda bioconductor-biostrings=2.60.0
+	conda install -c conda-forge r-plyr=1.8.6
+	conda install -c conda-forge r-dplyr=1.0.7
+fi
+
 conda activate r_codes_ec_lv
-bash gather_results.sh -t $tools -o $out_dir
-Rscript combine_results.R $out_dir
+echo "Combining results..."
+Rscript scripts/combine_results.R $out_dir
 
 #put results in gplas format
-if [[ $gplas_output = 'true' ]]; then
-	#create an environment for running r codes
-	if ! [[ $envs = *"r_codes_ec_lv"* ]]; then
-		echo "Creating conda environment r_codes_ec_lv..."
-		conda create --name r_codes_ec_lv r=4.1
-		conda activate r_codes_ec_lv
-		conda install -c bioconda bioconductor-biostrings=2.60.0
-		conda install -c conda-forge r-plyr=1.8.6
-		conda install -c conda-forge r-dplyr=1.0.7
-	fi
-
+if [[ $gplas_output = 'true' ]]; then	
 	#create a directory for the gplas output format
-	mkdir ../$out_dir/results_gplas_format
-	Rscript get_gplas_output.R ../$path $out_dir
+	mkdir $out_dir/results_gplas_format
+	echo "Writing gplas output..."
+	Rscript scripts/get_gplas_output.R $input $out_dir
 fi
+
+[ -f $out_dir/plasmidEC_output.csv ] && echo "All done! Output can be found in $out_dir" && exit 0

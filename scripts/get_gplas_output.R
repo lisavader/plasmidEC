@@ -8,7 +8,7 @@ input_directory=arguments[1]
 output_directory=arguments[2]
 
 #load results file
-combined_path<-paste('../',output_directory,'/plasmidEC_output.csv',sep='')
+combined_path<-paste(output_directory,'/plasmidEC_output.csv',sep='')
 combined <- read.csv(combined_path)
 
 ##write gplas output
@@ -57,6 +57,6 @@ for (genome in strain_names_list) {
   individual_gplas_ordered<-individual_gplas[,c(8,9,7,1)]
   names(individual_gplas_ordered)<-c('Prob_Chromosome','Prob_Plasmid','Prediction','Contig_name')
   individual_gplas_ordered<-join(individual_gplas_ordered,contig_lengths)
-  output_path<-paste('../',output_directory,'/results_gplas_format/',genome,'_plasmid_prediction.tab',sep='')
+  output_path<-paste(output_directory,'/results_gplas_format/',genome,'_plasmid_prediction.tab',sep='')
   write.table(individual_gplas_ordered,output_path,row.names = FALSE, sep='\t')
 }

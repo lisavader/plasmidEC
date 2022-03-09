@@ -9,30 +9,28 @@ while getopts :i:o:t: flag; do
 done
 
 #make results directory
-mkdir -p ../$out_dir/plascope_predictions
+mkdir -p $out_dir/plascope_output
 
 #download E. coli database
-mkdir -p ../databases/plascope
-cd ../databases/plascope
+mkdir -p databases/plascope
+cd databases/plascope
 if [[ ! -f chromosome_plasmid_db.3.cf ]]; then
+	"Downloading PlaScope E. coli database..."
 	wget https://zenodo.org/record/1311641/files/chromosome_plasmid_db.tar.gz
 	tar -xzf chromosome_plasmid_db.tar.gz
 	rm chromosome_plasmid_db.tar.gz
 fi
+cd ../..
 
 run_plascope(){
 input=$1
 out_dir=$2
 threads=$3
-cd ../../$out_dir/plascope_predictions
-#check whether input directory exists
-[ ! -d ../../$input ] && exit 1
+
 #run plascope on all strains in input directory
-for strain in ../../$input/*.fasta
-do
-name=$(basename $strain .fasta)
-plaScope.sh --fasta $strain -o . --db_dir ../../databases/plascope --db_name chromosome_plasmid_db --sample $name -t $threads --no-banner
-done
+echo "Running PlaScope..."
+name=$(basename $input .fasta)
+plaScope.sh --fasta $input -o $out_dir/plascope_output --db_dir databases/plascope --db_name chromosome_plasmid_db --sample $name -t $threads --no-banner
 }
 
 run_plascope $input $out_dir $threads

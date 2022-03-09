@@ -8,22 +8,21 @@ while getopts :i:o:t: flag; do
         esac
 done
 
-#check if input and output is provided
-[ -z $out_dir ] && exit 1
-[ -z $input ] && exit 1
-
-#create output directory
-mkdir -p ../$out_dir/rfplasmid_predictions
+mkdir -p $out_dir/rfplasmid_output
 
 run_rfplasmid(){
-path=$1
-output_directory=$2
+input=$1
+out_dir=$2
 threads=$3
-cd ../$out_dir/rfplasmid_predictions
-#check whether input directory exists
-[ ! -d ../../$input ] && exit 1
+
+echo "Running RFPlasmid..."
+
+#copy file to tmp direcory (rfplasmid only takes directories as input)
+mkdir $out_dir/rfplasmid_output/tmp
+cp $input $out_dir/rfplasmid_output/tmp
 #run rfplasmid
-rfplasmid --species Enterobacteriaceae --input ../../$input --jelly --threads $threads
+rfplasmid --species Enterobacteriaceae --input $out_dir/rfplasmid_output/tmp --jelly --threads $threads --out $out_dir/rfplasmid_output/
+rm -r $out_dir/rfplasmid_output/tmp
 }
 
 run_rfplasmid $input $out_dir $threads
