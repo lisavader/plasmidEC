@@ -1,10 +1,5 @@
 tools
 databases
 
-*_predictions
-
-all_results.csv
-final_output.csv
-
 .Rproj.user
 plasmidEC.Rproj
