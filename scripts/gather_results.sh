@@ -1,9 +1,9 @@
 #!/bin/bash
 
-while getopts :i:t:o: flag; do
+while getopts :i:c:o: flag; do
         case $flag in
 		i) input=$OPTARG;;
-                t) tools=$OPTARG;;
+                c) classifiers=$OPTARG;;
 		o) out_dir=$OPTARG;;
         esac
 done
@@ -80,17 +80,17 @@ done
 
 file=$(basename $input .fasta)
 
-if [[ $tools = *"mlplasmids"* ]]; then
+if [[ $classifiers = *"mlplasmids"* ]]; then
 	gather_mlplasmids
 fi
 
-if [[ $tools = *"plascope"* ]]; then
+if [[ $classifiers = *"plascope"* ]]; then
 	gather_plascope
 fi
-if [[ $tools = *"platon"* ]]; then
+if [[ $classifiers = *"platon"* ]]; then
 	gather_platon
 fi
-if [[ $tools = *"rfplasmid"* ]]; then
+if [[ $classifiers = *"rfplasmid"* ]]; then
 	gather_rfplasmid
 fi
 

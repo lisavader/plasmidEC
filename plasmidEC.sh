@@ -4,27 +4,52 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 version='0.1'
 
+usage(){
+cat << EOF
+usage: bash plasmidEC.sh [-i INPUT] [-o OUTPUT] [options]
+
+Mandatory arguments:
+  -i INPUT		input .fasta file
+  -o OUTPUT		output directory
+
+Optional arguments:
+  -h 			display this help message and exit
+  -c CLASSIFIERS	classifiers to be used, in lowercase and separated by a comma (default = plascope,platon,rfplasmid)
+  -t THREADS		nr. of threads used by PlaScope, Platon and RFPlasmid (default = 8)
+  -g			write gplas formatted output
+  -f			force overwriting of output dir
+  -v			display version nr. and exit
+
+EOF
+}
+
 #set default values
-tools='plascope,platon,rfplasmid'
+classifiers='plascope,platon,rfplasmid'
 threads=8
 force='false'
 gplas_output='false'
 
 #process flags provided
-while getopts :i:t:o:fgtv flag; do
+while getopts :i:c:o:fgtvh flag; do
 	case $flag in
 		i) input=$OPTARG;;
-		t) tools=$OPTARG;;
+		c) classifiers=$OPTARG;;
                 o) out_dir=$OPTARG;;
 		f) force='true';;
 		g) gplas_output='true';;
 		t) threads=$OPTARG;;
 		v) echo "PlasmidEC v. $version." && exit 0;;
+		h) usage && exit 0;;
 	esac
 done
 
+#when no flags are provided, display help message
+if [ $OPTIND -eq 1 ]; then
+	usage && exit 1
+fi
+
 #start plasmidEC
-printf "PlasmidEC v. $version.\nUsing binary classifiers: $tools.\n"
+printf "PlasmidEC v. $version.\nUsing binary classifiers: $classifiers.\n"
 
 #load user's conda base environment
 CONDA_PATH=$(conda info | grep -i 'base environment' | awk '{print $4}')
@@ -35,9 +60,9 @@ source $CONDA_PATH/etc/profile.d/conda.sh || echo "Error: Unable to load conda b
 [ -z $out_dir ] && echo "Please provide the name of the output directory (-o)" && exit 1
 
 if [[ $input == *.fasta ]]; then
-	echo "Found input file at $input"
+	echo "Found input file at: $input"
 else
-	echo "Error: No .fasta file found at $input" && exit 1
+	echo "Error: No .fasta file found at: $input" && exit 1
 fi
 
 #create output directory
@@ -56,7 +81,7 @@ fi
 envs=$(conda env list | awk '{print $1}' )
 
 #run specified tools, create conda env if not yet existing
-if [[ $tools = *"mlplasmids"* ]]; then
+if [[ $classifiers = *"mlplasmids"* ]]; then
 	if ! [[ $envs = *"mlplasmids_ec_lv"* ]]; then
 		echo "Creating conda environment mlplasmids_ec_lv..."
 		conda env create --file=$SCRIPT_DIR/yml/mlplasmids_ec_lv.yml
@@ -65,7 +90,7 @@ if [[ $tools = *"mlplasmids"* ]]; then
 	bash $SCRIPT_DIR/scripts/run_mlplasmids.sh -i $input -o $out_dir -d $SCRIPT_DIR
 fi
 
-if [[ $tools = *"plascope"* ]]; then
+if [[ $classifiers = *"plascope"* ]]; then
 	if ! [[ $envs = *"plascope_ec_lv"* ]]; then
 		echo "Creating conda environment plascope_ec_lv..."
 		conda create --name plascope_ec_lv -c bioconda/label/cf201901 plascope
@@ -74,7 +99,7 @@ if [[ $tools = *"plascope"* ]]; then
 	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
 fi
 
-if [[ $tools = *"platon"* ]]; then
+if [[ $classifiers = *"platon"* ]]; then
 	if ! [[ $envs = *"platon_ec_lv"* ]]; then
 		echo "Creating conda environment platon_ec_lv..."
 		conda create --name platon_ec_lv -c bioconda platon=1.6
@@ -83,7 +108,7 @@ if [[ $tools = *"platon"* ]]; then
 	bash $SCRIPT_DIR/scripts/run_platon.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
 fi
 
-if [[ $tools = *"rfplasmid"* ]]; then
+if [[ $classifiers = *"rfplasmid"* ]]; then
 	if ! [[ $envs = *"rfplasmid_ec_lv"* ]]; then
 		echo "Creating conda environment rfplasmid_ec_lv..."
 		conda create --name rfplasmid_ec_lv -c bioconda rfplasmid
@@ -96,7 +121,7 @@ fi
 
 #gather and combine results
 echo "Gathering results..."
-bash $SCRIPT_DIR/scripts/gather_results.sh -i $input -t $tools -o $out_dir
+bash $SCRIPT_DIR/scripts/gather_results.sh -i $input -c $classifiers -o $out_dir
 
 #create an environment for running r codes
 if ! [[ $envs = *"r_codes_ec_lv"* ]]; then
@@ -124,4 +149,4 @@ fi
 echo "Writing plasmid contigs..."
 bash $SCRIPT_DIR/scripts/write_plasmid_contigs.sh -i $input -o $out_dir
 
-[ -f $out_dir/ensemble_output.csv ] && echo "PlasmidEC finished. Output can be found in $out_dir" && exit 0
+[ -f $out_dir/ensemble_output.csv ] && echo "PlasmidEC finished. Output can be found in: $out_dir" && exit 0
