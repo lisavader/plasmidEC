@@ -2,7 +2,7 @@
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-version='0.1'
+version='1.0'
 
 usage(){
 cat << EOF
@@ -82,40 +82,40 @@ envs=$(conda env list | awk '{print $1}' )
 
 #run specified tools, create conda env if not yet existing
 if [[ $classifiers = *"mlplasmids"* ]]; then
-	if ! [[ $envs = *"mlplasmids_ec_lv"* ]]; then
-		echo "Creating conda environment mlplasmids_ec_lv..."
-		conda env create --file=$SCRIPT_DIR/yml/mlplasmids_ec_lv.yml
+	if ! [[ $envs = *"plasmidEC_mlplasmids"* ]]; then
+		echo "Creating conda environment plasmidEC_mlplasmids..."
+		conda env create --file=$SCRIPT_DIR/yml/plasmidEC_mlplasmids.yml
 	fi
-	conda activate mlplasmids_ec_lv
+	conda activate plasmidEC_mlplasmids
 	bash $SCRIPT_DIR/scripts/run_mlplasmids.sh -i $input -o $out_dir -d $SCRIPT_DIR
 fi
 
 if [[ $classifiers = *"plascope"* ]]; then
-	if ! [[ $envs = *"plascope_ec_lv"* ]]; then
-		echo "Creating conda environment plascope_ec_lv..."
-		conda create --name plascope_ec_lv -c bioconda/label/cf201901 plascope
+	if ! [[ $envs = *"plasmidEC_plascope"* ]]; then
+		echo "Creating conda environment plasmidEC_plascope..."
+		conda create --name plasmidEC_plascope -c bioconda/label/cf201901 plascope=1.3.1
 	fi
-	conda activate plascope_ec_lv
+	conda activate plasmidEC_plascope
 	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
 fi
 
 if [[ $classifiers = *"platon"* ]]; then
-	if ! [[ $envs = *"platon_ec_lv"* ]]; then
-		echo "Creating conda environment platon_ec_lv..."
-		conda create --name platon_ec_lv -c bioconda platon=1.6
+	if ! [[ $envs = *"plasmidEC_platon"* ]]; then
+		echo "Creating conda environment plasmidEC_platon..."
+		conda create --name plasmidEC_platon -c bioconda platon=1.6
 	fi
-	conda activate platon_ec_lv
+	conda activate plasmidEC_platon
 	bash $SCRIPT_DIR/scripts/run_platon.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
 fi
 
 if [[ $classifiers = *"rfplasmid"* ]]; then
-	if ! [[ $envs = *"rfplasmid_ec_lv"* ]]; then
-		echo "Creating conda environment rfplasmid_ec_lv..."
-		conda create --name rfplasmid_ec_lv -c bioconda rfplasmid
-		conda activate rfplasmid_ec_lv
+	if ! [[ $envs = *"plasmidEC_rfplasmid"* ]]; then
+		echo "Creating conda environment plasmidEC_rfplasmid..."
+		conda create --name plasmidEC_rfplasmid -c bioconda rfplasmid=0.0.18
+		conda activate plasmidEC_rfplasmid
 		rfplasmid --initialize
 	fi
-	conda activate rfplasmid_ec_lv
+	conda activate plasmidEC_rfplasmid
 	bash $SCRIPT_DIR/scripts/run_rfplasmid.sh -i $input -o $out_dir -t $threads
 fi
 
@@ -124,16 +124,16 @@ echo "Gathering results..."
 bash $SCRIPT_DIR/scripts/gather_results.sh -i $input -c $classifiers -o $out_dir
 
 #create an environment for running r codes
-if ! [[ $envs = *"r_codes_ec_lv"* ]]; then
-	echo "Creating conda environment r_codes_ec_lv..."
-	conda create --name r_codes_ec_lv r=4.1	
-	conda activate r_codes_ec_lv
+if ! [[ $envs = *"plasmidEC_R"* ]]; then
+	echo "Creating conda environment plasmidEC_R..."
+	conda create --name plasmidEC_R r=4.1	
+	conda activate plasmidEC_R
 	conda install -c bioconda bioconductor-biostrings=2.60.0
 	conda install -c conda-forge r-plyr=1.8.6
 	conda install -c conda-forge r-dplyr=1.0.7
 fi
 
-conda activate r_codes_ec_lv
+conda activate plasmidEC_R
 echo "Combining results..."
 Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir
 
