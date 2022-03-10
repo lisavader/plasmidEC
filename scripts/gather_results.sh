@@ -26,25 +26,22 @@ done
 gather_plascope(){
 results_dir=$out_dir/plascope_output/*_PlaScope
 
-#grab chromosmal contigs
-cat $results_dir/PlaScope_predictions/*chromosome.fasta | grep '>' | while read line
+#go to extended result file to find contig ID and class nr
+cat $results_dir/Centrifuge_results/*extendedresult | sed '1d' | while read line
 do
-contig=$(echo $line | cut -c 2-)
-echo $contig,"chromosome","plascope",$file >> $out_dir/all_predictions.csv
+contig=$(echo $line | cut -d ' ' -f1)
+class_nr=$(echo $line | cut -d ' ' -f3)
+#translate class nr to classification (i.e. 2 = chromosome, 3 = plasmid, 0 / 1 = unclassified)
+if [ $class_nr == '3' ]; then
+	classification="plasmid"
+elif [ $class_nr == '2' ]; then
+	classification="chromosome"
+elif [ $class_nr == '0' ] || [ $class_nr == '1' ]; then
+	classification="unclassified"
+fi
+#write to file
+echo $contig,$classification,"plascope",$file >> $out_dir/all_predictions.csv
 done
-#grab plasmid contigs
-cat $results_dir/PlaScope_predictions/*plasmid.fasta | grep '>' | while read line
-do
-contig=$(echo $line | cut -c 2-)
-echo $contig,"plasmid","plascope",$file >> $out_dir/all_predictions.csv
-done
-#grab unclassified contigs
-cat $results_dir/PlaScope_predictions/*unclassified.fasta | grep '>' | while read line
-do
-contig=$(echo $line | cut -c 2-)
-echo $contig,"unclassified","plascope",$file >> $out_dir/all_predictions.csv
-done
-
 }
 
 ##PLATON
