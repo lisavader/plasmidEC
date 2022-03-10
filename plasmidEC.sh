@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 version='0.1'
 
 #set default values
@@ -57,10 +59,10 @@ envs=$(conda env list | awk '{print $1}' )
 if [[ $tools = *"mlplasmids"* ]]; then
 	if ! [[ $envs = *"mlplasmids_ec_lv"* ]]; then
 		echo "Creating conda environment mlplasmids_ec_lv..."
-		conda env create --file=../yml/mlplasmids_ec_lv.yml
+		conda env create --file=$SCRIPT_DIR/yml/mlplasmids_ec_lv.yml
 	fi
 	conda activate mlplasmids_ec_lv
-	bash scripts/run_mlplasmids.sh -i $input -o $out_dir
+	bash $SCRIPT_DIR/scripts/run_mlplasmids.sh -i $input -o $out_dir -d $SCRIPT_DIR
 fi
 
 if [[ $tools = *"plascope"* ]]; then
@@ -69,7 +71,7 @@ if [[ $tools = *"plascope"* ]]; then
 		conda create --name plascope_ec_lv -c bioconda/label/cf201901 plascope
 	fi
 	conda activate plascope_ec_lv
-	bash scripts/run_plascope.sh -i $input -o $out_dir -t $threads
+	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
 fi
 
 if [[ $tools = *"platon"* ]]; then
@@ -78,7 +80,7 @@ if [[ $tools = *"platon"* ]]; then
 		conda create --name platon_ec_lv -c bioconda platon=1.6
 	fi
 	conda activate platon_ec_lv
-	bash scripts/run_platon.sh -i $input -o $out_dir -t $threads
+	bash $SCRIPT_DIR/scripts/run_platon.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
 fi
 
 if [[ $tools = *"rfplasmid"* ]]; then
@@ -89,12 +91,12 @@ if [[ $tools = *"rfplasmid"* ]]; then
 		rfplasmid --initialize
 	fi
 	conda activate rfplasmid_ec_lv
-	bash scripts/run_rfplasmid.sh -i $input -o $out_dir -t $threads
+	bash $SCRIPT_DIR/scripts/run_rfplasmid.sh -i $input -o $out_dir -t $threads
 fi
 
 #gather and combine results
 echo "Gathering results..."
-bash scripts/gather_results.sh -i $input -t $tools -o $out_dir
+bash $SCRIPT_DIR/scripts/gather_results.sh -i $input -t $tools -o $out_dir
 
 #create an environment for running r codes
 if ! [[ $envs = *"r_codes_ec_lv"* ]]; then
@@ -108,18 +110,18 @@ fi
 
 conda activate r_codes_ec_lv
 echo "Combining results..."
-Rscript scripts/combine_results.R $out_dir
+Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir
 
 #put results in gplas format
 if [[ $gplas_output = 'true' ]]; then	
 	#create a directory for the gplas output format
 	mkdir $out_dir/gplas_format
 	echo "Writing gplas output..."
-	Rscript scripts/write_gplas_output.R $input $out_dir
+	Rscript $SCRIPT_DIR/scripts/write_gplas_output.R $input $out_dir
 fi
 
 #write fasta file with plasmid contigs
 echo "Writing plasmid contigs..."
-bash scripts/write_plasmid_contigs.sh -i $input -o $out_dir
+bash $SCRIPT_DIR/scripts/write_plasmid_contigs.sh -i $input -o $out_dir
 
 [ -f $out_dir/ensemble_output.csv ] && echo "PlasmidEC finished. Output can be found in $out_dir" && exit 0
