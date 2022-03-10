@@ -1,24 +1,47 @@
 # plasmidEC
-Ensemble of binary plasmid classification tools
+An ensemble of plasmid classification tools.
 
-## Running the ensemble classifier
+PlasmidEC runs multiple binary classifiers that predict whether contigs are plasmid- or chromosome-derived. For each contig, it outputs the prediction given by the majority of the tools. PlasmidEC outcompetes individual classifiers, especially for contigs that contain antibiotic resistance genes. Currently only available for _E. coli_.
 
-For first time use, edit the main script (ensemble_classifier.sh) to include the path to your conda installation.
-This is required for installing and activating the conda environments used.
+## Supported tools
+- Mlplasmids (gitlab.com/sirarredondo/mlplasmids)
+- PlaScope (github.com/labgem/PlaScope)
+- Platon (github.com/oschwengers/platon)
+- RFPlasmid (github.com/aldertzomer/RFPlasmid)
 
-As input, the ensemble classifier takes assembly files with a .fasta extension. Currently only SPAdes type headers are supported.
+## Installation
+Clone plasmidEC from github:
+```
+git clone https://github.com/lisavader/plasmidEC.git
+```
+Upon first time usage, plasmidEC will automatically install its dependencies via conda and download the databases used by the tools. The only prerequisite is a conda installation.
 
-Arguments:
+## Usage
+```
+$ bash plasmidEC.sh -h
+usage: bash plasmidEC.sh [-i INPUT] [-o OUTPUT] [options]
 
--i      Path to input directory
+Mandatory arguments:
+  -i INPUT              input .fasta file
+  -o OUTPUT             output directory
 
--t      Names of the tools to be used, in lowercase, separated by a comma and in any order. Choose three from: mlplasmids, plascope, platon, rfplasmid.
+Optional arguments:
+  -h                    display this help message and exit
+  -c CLASSIFIERS        classifiers to be used, in lowercase and separated by a comma (default = plascope,platon,rfplasmid)
+  -t THREADS            nr. of threads used by PlaScope, Platon and RFPlasmid (default = 8)
+  -g                    write gplas formatted output
+  -f                    force overwriting of output dir
+  -v                    display version nr. and exit
+```
 
 Example:
 ```
-bash ensemble_classifier.sh -i testdata -t mlplasmids,plascope,platon
+bash plasmidEC.sh -i testdata/SRR6985737.fasta -o SRR6985737
 ```
+The combination of PlaScope, Platon and RFPlasmid gives the best results for _E. coli_. It is therefore recommended to stick to this default!
 
 ## Output
 
-The combined predictions can be found in the final_output.csv file. For each contig, it contains the individual prediction per tool, the total number of plasmid predictions, and the final result.
+- ensemble_output.csv: Main table containing the predictions made by each individual classifier, the total nr. of plasmid votes and the majority predictions.
+- plasmid_contigs.fasta: Sequences of all contigs predicted to originate from plasmids.
+- all_predictions.csv: Concatenated predictions of the individual classifiers (intermediate file, can be ignored)
