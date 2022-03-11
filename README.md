@@ -4,10 +4,10 @@ An ensemble of plasmid classification tools.
 PlasmidEC runs multiple binary classifiers that predict whether contigs are plasmid- or chromosome-derived. For each contig, it outputs the prediction given by the majority of the tools. PlasmidEC outcompetes individual classifiers, especially for contigs that contain antibiotic resistance genes. Currently only available for _E. coli_.
 
 ## Supported tools
-- Mlplasmids (gitlab.com/sirarredondo/mlplasmids)
-- PlaScope (github.com/labgem/PlaScope)
-- Platon (github.com/oschwengers/platon)
-- RFPlasmid (github.com/aldertzomer/RFPlasmid)
+- [mlplasmids](https://gitlab.com/sirarredondo/mlplasmids)
+- [PlaScope](https://github.com/labgem/PlaScope)
+- [Platon](https://github.com/oschwengers/platon)
+- [RFPlasmid](https://github.com/aldertzomer/RFPlasmid)
 
 ## Installation
 Clone plasmidEC from github:
