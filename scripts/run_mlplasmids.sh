@@ -1,42 +1,33 @@
 #!/bin/bash
 
-while getopts :i:o: flag; do
+while getopts :i:o:d: flag; do
         case $flag in
-                i) path=$OPTARG;;
-                o) output_directory=$OPTARG;;
+                i) input=$OPTARG;;
+                o) out_dir=$OPTARG;;
+		d) home_dir=$OPTARG;;
         esac
 done
 
-#check if input and output is provided
-[ -z $output_directory ] && exit 1
-[ -z $path ] && exit 1
-
-
 #create output directory
-mkdir -p ../$output_directory/mlplasmids_predictions
+mkdir -p $out_dir/mlplasmids_output
 
 #clone mlplasmids
-mkdir -p ../tools
-cd ../tools
-if [[ ! -d mlplasmids ]]; then
-	git clone https://gitlab.com/sirarredondo/mlplasmids.git
-else
-	echo "Mlplasmids is already installed."
+mkdir -p $home_dir/tools
+if [[ ! -d $home_dir/tools/mlplasmids ]]; then
+	echo "Cloning mlplasmids into tools..."
+	git clone https://gitlab.com/sirarredondo/mlplasmids.git $home_dir/tools
+else 
+	echo "Found mlplasmids installation."
 fi
-cd mlplasmids
 
 run_mlplasmids(){
-path=$1
-output_directory=$2
-#check whether input directory exists
-[ ! -d ../../$path ] && exit 1
-#run mlplasmids on all strains in input directory
-for strain in ../../$path/*.fasta
-do
-name=$(basename $strain .fasta)
-echo "Running mlplasmids on" $name
-Rscript scripts/run_mlplasmids.R $strain ../../${output_directory}/mlplasmids_predictions/${name}.tsv 0.5 'Escherichia coli'
-done
+input=$1
+out_dir=$2
+
+#run mlplasmids on input file
+echo "Running mlplasmids..."
+name=$(basename $input .fasta)
+Rscript $home_dir/tools/mlplasmids/scripts/run_mlplasmids.R $input ${out_dir}/mlplasmids_output/${name}.tsv 0.5 'Escherichia coli'
 }
 
-run_mlplasmids $path $output_directory
+run_mlplasmids $input $out_dir

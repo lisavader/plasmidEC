@@ -1,78 +1,36 @@
 #!/bin/bash
 
-while getopts :i:o:p flag; do
+while getopts :i:o:t:d: flag; do
         case $flag in
-                i) path=$OPTARG;;
-                o) output_directory=$OPTARG;;
-		p) parallel=TRUE
+                i) input=$OPTARG;;
+                o) out_dir=$OPTARG;;
+		t) threads=$OPTARG;;
+		d) home_dir=$OPTARG;;
         esac
 done
 
-#check if input and output is provided
-[ -z $output_directory ] && exit 1
-[ -z $path ] && exit 1
-
 #make results directory
-mkdir -p ../$output_directory/platon_predictions
+mkdir -p $out_dir/platon_output
 
 #download database
-mkdir -p ../databases/platon
-cd ../databases/platon
-if [[ ! -d db ]]; then
-	wget https://zenodo.org/record/4066768/files/db.tar.gz
-	tar -xzf db.tar.gz
-	rm db.tar.gz
+mkdir -p $home_dir/databases/platon
+if [[ ! -d $home_dir/databases/platon/db ]]; then
+	echo "Downloading Platon database..."
+	wget -P $home_dir/databases/platon https://zenodo.org/record/4066768/files/db.tar.gz 
+	tar -xzf $home_dir/databases/platon/db.tar.gz
+	rm $home_dir/databases/platon/db.tar.gz
 fi
 
 run_platon(){
-path=$1
-output_directory=$2
+input=$1
+out_dir=$2
+threads=$3
 
-cd ../../$output_directory/platon_predictions
-
-#check whether input directory exists
-[ ! -d ../../$path ] && exit 1
-
-#run platon on all strains in input directory
-for strain in ../../$path/*.fasta
-do
-name=$(basename $strain .fasta)
-echo "Running platon on" $name
-platon --db ../../databases/platon/db --output $name --threads 8 $strain
-done
+#run platon on input file
+echo "Running Platon..."
+name=$(basename $input .fasta)
+platon --db $home_dir/databases/platon/db --output $out_dir/platon_output/$name --threads $threads $input
 }
 
-run_platon_parallel(){
-path=$1
-output_directory=$2
+run_platon $input $out_dir $threads
 
-cd ../../$output_directory
-
-#check whether input directory exists
-[ ! -d ../$path ] && exit 1
-
-#build scripts
-mkdir -p platon_scripts
-
-for strain in ../$path/*.fasta
-do
-name=$(basename $strain .fasta)
-echo "#!/bin/bash
-cd ../platon_predictions
-platon --db ../../databases/platon/db --output $name --threads 8 ../$strain" > platon_scripts/${name}.sh
-done
-
-#execute scripts
-cd platon_scripts
-for script in $(ls *.sh); do
-echo "Running platon script" ${script}"..."
-sbatch --time 1:00:00 --mem 5G -c 8 $script
-done
-}
-
-
-if [[ $parallel = TRUE ]]; then
-	run_platon_parallel $path $output_directory
-else	
-	run_platon $path $output_directory
-fi

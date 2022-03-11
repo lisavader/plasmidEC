@@ -4,26 +4,26 @@ arguments = commandArgs(trailingOnly=TRUE)
 output_directory=arguments[1]
 
 ##Load results
-all_results_path<-paste("../",output_directory,"/all_predictions.csv",sep='')
+all_results_path<-paste(output_directory,"/all_predictions.csv",sep='')
 all_results <- read.csv(all_results_path, header = FALSE)
 names(all_results) <- c("Contig_name","prediction","software","genome_id")
 
 ##Process each software
 mlplasmids <- all_results[all_results$software=='mlplasmids',]
 mlplasmids <- mlplasmids[,-c(3)]
-names(mlplasmids) <- c("Contig_name","mlplasmids","genome_id")
+names(mlplasmids) <- c("Contig_name","Mlplasmids","Genome_id")
 
 platon <- all_results[all_results$software=='platon',]
 platon <- platon[,-c(3)]
-names(platon) <- c("Contig_name","platon","genome_id")
+names(platon) <- c("Contig_name","Platon","Genome_id")
 
 plascope <- all_results[all_results$software=='plascope',]
 plascope <- plascope[,-c(3)]
-names(plascope) <- c("Contig_name","plascope","genome_id")
+names(plascope) <- c("Contig_name","PlaScope","Genome_id")
 
 rfplasmid <- all_results[all_results$software=='rfplasmid',]
 rfplasmid <- rfplasmid[,-c(3)]
-names(rfplasmid) <- c("Contig_name","rfplasmid","genome_id")
+names(rfplasmid) <- c("Contig_name","RFPlasmid","Genome_id")
 
 ##Combine results
 combined <- merge(merge(mlplasmids,platon,all = TRUE),merge(rfplasmid,plascope, all = TRUE),all = TRUE)
@@ -34,12 +34,12 @@ if("mlplasmids" %in% colnames(combined)) {
 }
 
 ##Assign plasmid if called by more than one of the tools
-combined$plasmid_count <- apply(combined, 1, function(x) length(which(x=="plasmid")))
-combined$classification <- "chromosome"
-combined$classification[combined$plasmid_count>1] <- "plasmid"
+combined$Plasmid_count <- apply(combined, 1, function(x) length(which(x=="plasmid")))
+combined$Combined_prediction <- "chromosome"
+combined$Combined_prediction[combined$Plasmid_count>1] <- "plasmid"
 
 ##Write output file
-combined_path<-paste('../',output_directory,'/plasmidEC_output.csv',sep='')
+combined_path<-paste(output_directory,'/ensemble_output.csv',sep='')
 write.csv(combined,combined_path,row.names = FALSE)
 
 
