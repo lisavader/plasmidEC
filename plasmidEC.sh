@@ -84,7 +84,7 @@ envs=$(conda env list | awk '{print $1}' )
 if [[ $classifiers = *"mlplasmids"* ]]; then
 	if ! [[ $envs = *"plasmidEC_mlplasmids"* ]]; then
 		echo "Creating conda environment plasmidEC_mlplasmids..."
-		conda env create --file=$SCRIPT_DIR/yml/plasmidEC_mlplasmids.yml
+		conda env create --file=$SCRIPT_DIR/yml/plasmidEC_mlplasmids.yml --yes
 	fi
 	conda activate plasmidEC_mlplasmids
 	bash $SCRIPT_DIR/scripts/run_mlplasmids.sh -i $input -o $out_dir -d $SCRIPT_DIR
@@ -93,7 +93,7 @@ fi
 if [[ $classifiers = *"plascope"* ]]; then
 	if ! [[ $envs = *"plasmidEC_plascope"* ]]; then
 		echo "Creating conda environment plasmidEC_plascope..."
-		conda create --name plasmidEC_plascope -c bioconda/label/cf201901 plascope=1.3.1
+		conda create --name plasmidEC_plascope -c bioconda/label/cf201901 plascope=1.3.1 --yes
 	fi
 	conda activate plasmidEC_plascope
 	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
@@ -102,7 +102,7 @@ fi
 if [[ $classifiers = *"platon"* ]]; then
 	if ! [[ $envs = *"plasmidEC_platon"* ]]; then
 		echo "Creating conda environment plasmidEC_platon..."
-		conda create --name plasmidEC_platon -c bioconda platon=1.6
+		conda create --name plasmidEC_platon -c bioconda platon=1.6 --yes
 	fi
 	conda activate plasmidEC_platon
 	bash $SCRIPT_DIR/scripts/run_platon.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
@@ -111,7 +111,7 @@ fi
 if [[ $classifiers = *"rfplasmid"* ]]; then
 	if ! [[ $envs = *"plasmidEC_rfplasmid"* ]]; then
 		echo "Creating conda environment plasmidEC_rfplasmid..."
-		conda create --name plasmidEC_rfplasmid -c bioconda rfplasmid=0.0.18
+		conda create --name plasmidEC_rfplasmid -c bioconda rfplasmid=0.0.18 --yes
 		conda activate plasmidEC_rfplasmid
 		rfplasmid --initialize
 	fi
@@ -126,11 +126,11 @@ bash $SCRIPT_DIR/scripts/gather_results.sh -i $input -c $classifiers -o $out_dir
 #create an environment for running r codes
 if ! [[ $envs = *"plasmidEC_R"* ]]; then
 	echo "Creating conda environment plasmidEC_R..."
-	conda create --name plasmidEC_R r=4.1	
+	conda create --name plasmidEC_R r=4.1 --yes
 	conda activate plasmidEC_R
-	conda install -c bioconda bioconductor-biostrings=2.60.0
-	conda install -c conda-forge r-plyr=1.8.6
-	conda install -c conda-forge r-dplyr=1.0.7
+	conda install -c bioconda bioconductor-biostrings=2.60.0 --yes
+	conda install -c conda-forge r-plyr=1.8.6 --yes
+	conda install -c conda-forge r-dplyr=1.0.7 --yes
 fi
 
 conda activate plasmidEC_R
