@@ -17,7 +17,7 @@ mkdir -p $home_dir/databases/platon
 if [[ ! -d $home_dir/databases/platon/db ]]; then
 	echo "Downloading Platon database..."
 	wget -P $home_dir/databases/platon https://zenodo.org/record/4066768/files/db.tar.gz 
-	tar -xzf $home_dir/databases/platon/db.tar.gz
+	tar -xzf $home_dir/databases/platon/db.tar.gz -C $home_dir/databases/platon
 	rm $home_dir/databases/platon/db.tar.gz
 fi
 

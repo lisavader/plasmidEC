@@ -17,7 +17,7 @@ mkdir -p $home_dir/databases/plascope
 if [[ ! -f $home_dir/databases/plascope/chromosome_plasmid_db.3.cf ]]; then
 	"Downloading PlaScope E. coli database..."
 	wget -P $home_dir/databases/plascope https://zenodo.org/record/1311641/files/chromosome_plasmid_db.tar.gz
-	tar -xzf $home_dir/databases/plascope/chromosome_plasmid_db.tar.gz
+	tar -xzf $home_dir/databases/plascope/chromosome_plasmid_db.tar.gz -C $home_dir/databases/plascope
 	rm $home_dir/databases/plascope/chromosome_plasmid_db.tar.gz
 fi
 
