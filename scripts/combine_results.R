@@ -1,4 +1,4 @@
-
+suppressMessages(library(tidyr))
 ##get the input and output dir from command line arguments.
 arguments = commandArgs(trailingOnly=TRUE)
 output_directory=arguments[1]
@@ -11,7 +11,10 @@ names(all_results) <- c("Contig_name","prediction","software","genome_id")
 ##Process each software
 mlplasmids <- all_results[all_results$software=='mlplasmids',]
 mlplasmids <- mlplasmids[,-c(3)]
-names(mlplasmids) <- c("Contig_name","Mlplasmids","Genome_id")
+names(mlplasmids) <- c("True_name","mlplasmids","Genome_id")
+#separate the rfplasmid	name, in case there are spaces (which are not handled by plascope and platon)
+mlplasmids<-suppressMessages(separate(mlplasmids,'True_name',into=c('Contig_name','Excess_name'),sep=' ',remove=TRUE))
+mlplasmids <- mlplasmids[,-c(2)]
 
 platon <- all_results[all_results$software=='platon',]
 platon <- platon[,-c(3)]
@@ -23,10 +26,13 @@ names(plascope) <- c("Contig_name","PlaScope","Genome_id")
 
 rfplasmid <- all_results[all_results$software=='rfplasmid',]
 rfplasmid <- rfplasmid[,-c(3)]
-names(rfplasmid) <- c("Contig_name","RFPlasmid","Genome_id")
+names(rfplasmid) <- c("True_name","RFPlasmid","Genome_id")
+#separate the rfplasmid	name, in case there are spaces (which are not handled by plascope and platon)
+rfplasmid<-suppressMessages(separate(rfplasmid,'True_name',into=c('Contig_name','Excess_name'),sep=' ',remove=TRUE))
+rfplasmid <- rfplasmid[,-c(2)]
 
 ##Combine results
-combined <- merge(merge(mlplasmids,platon,all = TRUE),merge(rfplasmid,plascope, all = TRUE),all = TRUE)
+combined <- merge(merge(mlplasmids,rfplasmid,all = TRUE),merge(plascope,platon, all = TRUE),all = TRUE)
 combined <- combined[, colSums(is.na(combined)) != nrow(combined)] #remove column of non-included tool
 #replace NA of mlplasmids with 'chromosome'.if the column exists
 if("mlplasmids" %in% colnames(combined)) {
