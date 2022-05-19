@@ -1,6 +1,7 @@
-library(plyr)
-library(Biostrings)
-library(dplyr)
+suppressMessages(library(plyr))
+suppressMessages(library(Biostrings))
+suppressMessages(library(dplyr))
+suppressMessages(library(tidyr))
 
 ##get the directory which contains the fasta files from the arguments on the command line.
 arguments = commandArgs(trailingOnly=TRUE)
@@ -33,6 +34,10 @@ Contig_name<-as.character(names(fasta_parsed))
 Contig_length<-as.integer(lengths(fasta_parsed))
 tmp_df<-data.frame(Contig_name,Contig_length)
 contig_lengths<-rbind(contig_lengths,tmp_df)
+
+#Rename the contigs with separate
+suppressMessages(contig_lengths<-separate(contig_lengths,'Contig_name',into=c('Contig_name','Excess_name'),sep=' ',remove=TRUE))
+suppressMessages(contig_lengths <- contig_lengths[,-c(2)])
 
 #combine with contig-lengths
 gplas_output<-join(gplas_output,contig_lengths)
