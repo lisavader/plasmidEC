@@ -16,6 +16,9 @@ Optional arguments:
   -h 			display this help message and exit
   -c CLASSIFIERS	classifiers to be used, in lowercase and separated by a comma (default = plascope,platon,rfplasmid)
   -t THREADS		nr. of threads used by PlaScope, Platon and RFPlasmid (default = 8)
+  -p plascope DB path   Full path for a custom plascope DB. Needed for using plasmidEC with species other than E. coli 
+  -d plascope DB name   Name of the custom plascope DB
+  -r rfplasmid model    Name of the rfplasmid model selected. Needed for using plasmidEC with species other than E. coli (default = Enterobacteriaceae)
   -g			write gplas formatted output
   -f			force overwriting of output dir
   -v			display version nr. and exit
@@ -28,15 +31,21 @@ classifiers='plascope,platon,rfplasmid'
 threads=8
 force='false'
 gplas_output='false'
+plascope_database_path=${SCRIPT_DIR}/databases/plascope
+plascope_database_name='chromosome_plasmid_db'
+rfplasmid_model='Enterobacteriaceae'
 
 #process flags provided
-while getopts :i:c:o:fgtvh flag; do
+while getopts :i:c:o:d:p:r:fgtvh flag; do
 	case $flag in
 		i) input=$OPTARG;;
 		c) classifiers=$OPTARG;;
                 o) out_dir=$OPTARG;;
 		f) force='true';;
 		g) gplas_output='true';;
+                p) plascope_database_path=$OPTARG;;
+		d) plascope_database_name=$OPTARG;;
+		r) rfplasmid_model=$OPTARG;;
 		t) threads=$OPTARG;;
 		v) echo "PlasmidEC v. $version." && exit 0;;
 		h) usage && exit 0;;
@@ -96,7 +105,7 @@ if [[ $classifiers = *"plascope"* ]]; then
 		conda create --name plasmidEC_plascope -c bioconda/label/cf201901 plascope=1.3.1 --yes
 	fi
 	conda activate plasmidEC_plascope
-	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
+	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d ${plascope_database_path} -n ${plascope_database_name}
 fi
 
 if [[ $classifiers = *"platon"* ]]; then
@@ -116,7 +125,7 @@ if [[ $classifiers = *"rfplasmid"* ]]; then
 		rfplasmid --initialize
 	fi
 	conda activate plasmidEC_rfplasmid
-	bash $SCRIPT_DIR/scripts/run_rfplasmid.sh -i $input -o $out_dir -t $threads
+	bash $SCRIPT_DIR/scripts/run_rfplasmid.sh -i $input -o $out_dir -t $threads -s ${rfplasmid_model}
 fi
 
 #gather and combine results
@@ -129,6 +138,7 @@ if ! [[ $envs = *"plasmidEC_R"* ]]; then
 	conda create --name plasmidEC_R r=4.1 --yes
 	conda activate plasmidEC_R
 	conda install -c bioconda bioconductor-biostrings=2.60.0 --yes
+	conda install -c conda-forge r-tidyr=1.2.0 --yes
 	conda install -c conda-forge r-plyr=1.8.6 --yes
 	conda install -c conda-forge r-dplyr=1.0.7 --yes
 fi
