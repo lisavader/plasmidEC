@@ -2,6 +2,8 @@ suppressMessages(library(tidyr))
 ##get the input and output dir from command line arguments.
 arguments = commandArgs(trailingOnly=TRUE)
 output_directory=arguments[1]
+plasmid_limit=arguments[2]
+plasmid_limit=as.integer(plasmid_limit)
 
 ##Load results
 all_results_path<-paste(output_directory,"/all_predictions.csv",sep='')
@@ -52,7 +54,7 @@ print("Error during combination of tools output. Maybe you didn't select 3 diffe
 ##Assign plasmid if called by more than one of the tools
 combined$Plasmid_count <- apply(combined, 1, function(x) length(which(x=="plasmid")))
 combined$Combined_prediction <- "chromosome"
-combined$Combined_prediction[combined$Plasmid_count>1] <- "plasmid"
+combined$Combined_prediction[combined$Plasmid_count>plasmid_limit] <- "plasmid"
 
 ##Write output file
 combined_path<-paste(output_directory,'/ensemble_output.csv',sep='')
