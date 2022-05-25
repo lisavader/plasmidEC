@@ -16,16 +16,17 @@ Mandatory arguments:
   -o OUTPUT		output directory.
 
 Optional arguments:
-  -h 			display this help message and exit.
-  -c CLASSIFIERS	classifiers to be used, in lowercase and separated by a comma.
+  -h 			Display this help message and exit.
+  -c CLASSIFIERS	Classifiers to be used, in lowercase and separated by a comma.
   -s SPECIES		Select one of the pre-loaded species ("Escherichia coli", "Klebsiella pneumoniae", "Acinetobacter baumannii", "Salmonella enterica", "Pseudomonas aeruginosa", "Entrococcus faecium", "Enterococcus faecalis", "Staphylococcus aureus").
   -t THREADS		nr. of threads used by PlaScope, Platon and RFPlasmid (default = 8).
   -p plascope DB path   Full path for a custom plascope DB. Needed for using plasmidEC with species other than pre-loaded species. Not compatible with -s.
   -d plascope DB name   Name of the custom plascope DB. Not compatible with -s.
   -r rfplasmid model    Name of the rfplasmid model selected. Needed for using plasmidEC with species other than pre-loaded species. Not compatible with -s.
-  -g			write gplas formatted output.
-  -f			force overwriting of output dir.
-  -v			display version nr. and exit.
+  -g			Write gplas formatted output.
+  -m                    Use minority vote to classify contigs as plasmid-derived.
+  -f			Force overwriting of output dir.
+  -v			Display version nr. and exit.
 
 EOF
 }
@@ -37,7 +38,7 @@ force='false'
 gplas_output='false'
 
 #process flags provided
-while getopts :i:c:o:d:p:s:r:fgtvh flag; do
+while getopts :i:c:o:d:p:s:r:fgtvhm flag; do
 	case $flag in
 		i) input=$OPTARG;;
 		c) classifiers=$OPTARG;;
@@ -45,6 +46,7 @@ while getopts :i:c:o:d:p:s:r:fgtvh flag; do
                 o) out_dir=$OPTARG;;
 		f) force='true';;
 		g) gplas_output='true';;
+		m) minority_vote='true';;
                 p) plascope_database_path=$OPTARG;;
 		d) plascope_database_name=$OPTARG;;
 		r) rfplasmid_model=$OPTARG;;
@@ -216,9 +218,18 @@ if ! [[ $envs = *"plasmidEC_R"* ]]; then
 	conda install -c conda-forge r-dplyr=1.0.7 --yes
 fi
 
+#Combine results and create final output
+#Check if minority vote option has been selected
+if [[ $minority_vote = 'true' ]]; then
+    plasmid_limit=0
+    echo "You have selected the -m flag. Minority vote for classifying contigs as plasmid will be applied"
+else
+    plasmid_limit=1
+fi
+
 conda activate plasmidEC_R
 echo "Combining results..."
-Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir
+Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir $plasmid_limit
 
 #put results in gplas format
 if [[ $gplas_output = 'true' ]]; then	
