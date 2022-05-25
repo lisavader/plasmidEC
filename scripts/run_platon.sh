@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#set -x
+set -e
+
 while getopts :i:o:t:d: flag; do
         case $flag in
                 i) input=$OPTARG;;

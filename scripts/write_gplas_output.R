@@ -15,12 +15,16 @@ combined <- read.csv(combined_path)
 ##write gplas output
 gplas_output<-combined
 
-#get the prob of being a chromosome - for cases of plascope unclassified, this will provide a probability of 0.5 if split decision.
+if ("PlaScope" %in% colnames(gplas_output)){
 gplas_output$Prob_Chromosome<-ifelse(gplas_output$PlaScope=='unclassified', round((2-as.numeric(gplas_output$Plasmid_count))/2,2), round((3-as.numeric(gplas_output$Plasmid_count))/3,2))
 #get the probability of being a plasmid
 gplas_output$Prob_Plasmid<-ifelse(gplas_output$PlaScope=='unclassified', round((as.numeric(gplas_output$Plasmid_count))/2,2), round((as.numeric(gplas_output$Plasmid_count))/3,2))
 #cases in which prob=0.5 are named as plasmid.
 gplas_output$Combined_prediction<-ifelse(gplas_output$Prob_Plasmid==0.5,'Plasmid',as.character(gplas_output$Combined_prediction))
+} else {
+gplas_output$Prob_Chromosome<-round((3-as.numeric(gplas_output$Plasmid_count))/3,2)
+gplas_output$Prob_Plasmid<-round((as.numeric(gplas_output$Plasmid_count))/3,2)
+}
 ##replace with capital letter the predictions
 gplas_output$Combined_prediction<-gsub(gplas_output$Combined_prediction, pattern="plasmid", replacement="Plasmid")
 gplas_output$Combined_prediction<-gsub(gplas_output$Combined_prediction, pattern="chromosome", replacement="Chromosome")
