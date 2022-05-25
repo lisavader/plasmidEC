@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#set -x
+set -e
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "../${BASH_SOURCE[1]}" )" &> /dev/null && pwd )
 
 while getopts :i:o:t:d:n: flag; do
@@ -7,7 +10,7 @@ while getopts :i:o:t:d:n: flag; do
                 i) input=$OPTARG;;
                 o) out_dir=$OPTARG;;
 		t) threads=$OPTARG;;
-		d) home_dir=$OPTARG;;
+		d) database_dir=$OPTARG;;
 		n) plascope_database_name=$OPTARG;;
         esac
 done
@@ -33,7 +36,7 @@ plascope_database_name=$4
 #run plascope on all strains in input directory
 echo "Running PlaScope..."
 name=$(basename $input .fasta)
-plaScope.sh --fasta $input -o $out_dir/plascope_output --db_dir $home_dir --db_name ${plascope_database_name} --sample $name -t $threads --no-banner
+plaScope.sh --fasta $input -o $out_dir/plascope_output --db_dir $database_dir --db_name ${plascope_database_name} --sample $name -t $threads --no-banner
 }
 
 run_plascope $input $out_dir $threads $plascope_database_name
