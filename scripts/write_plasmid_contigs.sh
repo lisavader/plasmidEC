@@ -10,8 +10,7 @@ done
 #extract contig names from output
 plasmid_contigs=$(cat $out_dir/ensemble_output.csv | grep '"plasmid"$' | cut -d , -f 1 | sed 's/"//g')
 
-#write contig name and first line after
+#write everything between contig name and next > character (including contig name)
 for contig in $plasmid_contigs; do
-	grep -A 1 $contig $input >> $out_dir/plasmid_contigs.fasta
+        awk -v contig=$contig 'BEGIN {RS=">"} index($0,contig) {print ">"$0}' $input >> $out_dir/plasmid_contigs.fasta
 done
-
