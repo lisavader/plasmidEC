@@ -30,7 +30,7 @@ force='false'
 gplas_output='false'
 
 #process flags provided
-while getopts :i:c:o:fgtvh flag; do
+while getopts :i:c:o:t:fgvh flag; do
 	case $flag in
 		i) input=$OPTARG;;
 		c) classifiers=$OPTARG;;
