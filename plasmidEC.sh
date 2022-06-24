@@ -94,6 +94,7 @@ if [[ $classifiers = *"plascope"* ]]; then
 	if ! [[ $envs = *"plasmidEC_plascope"* ]]; then
 		echo "Creating conda environment plasmidEC_plascope..."
 		conda create --name plasmidEC_plascope -c bioconda/label/cf201901 plascope=1.3.1 --yes
+		conda install centrifuge=1.0.3=py36pl5.22.0_3 -c bioconda
 	fi
 	conda activate plasmidEC_plascope
 	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
