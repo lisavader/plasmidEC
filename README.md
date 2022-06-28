@@ -1,15 +1,31 @@
-# plasmidEC
-An ensemble of plasmid classification tools.
+<p align="center">
+<img src="plasmidEC_logo.svg" alt="logo_package" width="600">
+</p>
 
-PlasmidEC runs multiple binary classifiers that predict whether contigs are plasmid- or chromosome-derived. For each contig, it outputs the prediction given by the majority of the tools. PlasmidEC outcompetes individual classifiers, especially for contigs that contain antibiotic resistance genes. Currently only available for _E. coli_.
+PlasmidEC is an ensemble of plasmid classification tools.
 
-## Supported tools
+PlasmidEC runs multiple binary classification tools that predict the origin of contigs (plasmid or chromosome). For each contig, it outputs the prediction given by the majority of the tools. PlasmidEC outcompetes individual classifiers, especially for contigs that contain antibiotic resistance genes. 
+
+PlasmidEC is currently available for _E. coli_, _K. pneumoniae_, _A. baumannii_, _S. enterica_, _P. aeruginosa_, _E. faecium_, _E. faecalis_ and _S. aureus_
+
+# Table of contents
+* [Requirements](#requirements)
+* [Supported tools](#Supported tools)
+* [Installation](#installation)
+
+
+# Requirements
+Clone plasmidEC from github:
+```
+git clone https://github.com/lisavader/plasmidEC.git
+```
+# Supported tools
 - [mlplasmids](https://gitlab.com/sirarredondo/mlplasmids)
 - [PlaScope](https://github.com/labgem/PlaScope)
 - [Platon](https://github.com/oschwengers/platon)
 - [RFPlasmid](https://github.com/aldertzomer/RFPlasmid)
 
-## Installation
+# Installation
 Clone plasmidEC from github:
 ```
 git clone https://github.com/lisavader/plasmidEC.git
