@@ -13,7 +13,6 @@ while getopts ":i:o:d:s:" flag; do
 done
 
 species_model=$(echo "$species_model" | sed "s/'//g")
-echo "$species_model"
 
 #create output directory
 mkdir -p $out_dir/mlplasmids_output

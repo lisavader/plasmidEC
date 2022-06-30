@@ -66,7 +66,7 @@ echo "You have selected the Escherichia coli as a species; flags -p , -d and -r 
 
 elif [[ $species == 'Klebsiella pneumoniae' ]]; then
 plascope_database_path=${SCRIPT_DIR}/databases/plascope
-plascope_database_name='kpneumoniae_plasmid_db'
+plascope_database_name='K_pneumoniae_plasmid_db'
 rfplasmid_model='Enterobacteriaceae'
 classifiers='plascope,platon,rfplasmid'
 echo "You have selected Klebsiella pneumoniae as a species; flags -p , -d and -r will be ignored"
@@ -81,19 +81,29 @@ echo "You have selected Acinetobacter baumannii as a species; flags -p , -d and 
 
 elif [[ $species == 'Pseudomonas aeruginosa' ]]; then
 plascope_database_path=${SCRIPT_DIR}/databases/plascope
-plascope_database_name='paeruginosa_plasmid_db'
+plascope_database_name='P_aeruginosa_plasmid_db'
 rfplasmid_model='Pseudomonas'
 echo "You have selected Pseudomonas aeruginosa as a species; flags -p , -d and -r will be ignored"
 
 elif [[ $species == 'Enterococcus faecalis' ]]; then
-plascope_database_path=${SCRIPT_DIR}/databases/plascope
-plascope_database_name='efaecalis_plasmid_db'
+#plascope_database_path=${SCRIPT_DIR}/databases/plascope
+#plascope_database_name='E_faecalis_plasmid_db'
 rfplasmid_model='Enterococcus'
+classifiers='rfplasmid,platon,mlplasmids'
+mlplasmids_model="'""Enterococcus faecalis""'"
 echo "You have selected Enterococcus faecalis as a species; flags -p , -d and -r will be ignored"
+
+elif [[ $species == 'Enterococcus faecium' ]]; then
+#plascope_database_path=${SCRIPT_DIR}/databases/plascope
+#plascope_database_name='E_faecium_plasmid'
+rfplasmid_model='Enterococcus'
+classifiers='rfplasmid,platon,mlplasmids'
+mlplasmids_model="'""Enterococcus faecium""'"
+echo "You have selected Enterococcus faecium as a species; flags -p , -d and -r will be ignored"
 
 elif [[ $species == 'Salmonella enterica' ]]; then
 plascope_database_path=${SCRIPT_DIR}/databases/plascope
-plascope_database_name='senterica_plasmid_db'
+plascope_database_name='S_enterica_plasmid_db'
 rfplasmid_model='Generic'
 echo "You have selected Salmonella enterica as a species; -p , -d and -r flags will be ignored"
 
@@ -180,7 +190,7 @@ if [[ $classifiers = *"plascope"* ]]; then
 		conda create --name plasmidEC_plascope -c bioconda/label/cf201901 plascope=1.3.1 --yes
 	fi
 	conda activate plasmidEC_plascope
-	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d ${plascope_database_path} -n ${plascope_database_name}
+	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d ${plascope_database_path} -n ${plascope_database_name} -s "$species"
 fi
 
 if [[ $classifiers = *"platon"* ]]; then
@@ -229,7 +239,7 @@ fi
 
 conda activate plasmidEC_R
 echo "Combining results..."
-Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir $plasmid_limit
+Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir $plasmid_limit $classifiers
 
 #put results in gplas format
 if [[ $gplas_output = 'true' ]]; then	
@@ -243,4 +253,4 @@ fi
 echo "Writing plasmid contigs..."
 bash $SCRIPT_DIR/scripts/write_plasmid_contigs.sh -i $input -o $out_dir
 
-[ -f $out_dir/ensemble_output.csv ] && echo "PlasmidEC finished. Output can be found in: $out_dir" && exit 0
+[ -f $out_dir/ensemble_output.csv ] && echo "PlasmidEC finished successfully. Output can be found in: $out_dir" && exit 0

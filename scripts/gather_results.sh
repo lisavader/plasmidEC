@@ -20,7 +20,7 @@ if [ -f $out_dir/mlplasmids_output/$file.tsv ]; then
 tail -n +2 $out_dir/mlplasmids_output/$file.tsv | while read line
 do
 prediction=$(echo "$line" | cut -f3 | sed 's/"//g')
-contig=$(echo "$line" | cut -f4 | sed 's/"//g')
+contig=$(echo "$line" | cut -f4 | cut -f1 -d, | sed 's/"//g')
 echo $contig,${prediction,,},mlplasmids,$file >> $out_dir/all_predictions.csv
 done
 else

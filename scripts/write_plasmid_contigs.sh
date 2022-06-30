@@ -11,10 +11,12 @@ while getopts :i:o: flag; do
 done
 
 #extract contig names from output
-plasmid_contigs=$(cat $out_dir/ensemble_output.csv | grep '"plasmid"$' | cut -d , -f 1 | sed 's/"//g')
+plasmid_contigs=$(grep '"plasmid"$' "$out_dir"/ensemble_output.csv | cut -d , -f 1 | sed 's/"//g')
+echo "PLASMID CONTIGS ARE.."
+echo ${plasmid_contigs}
 
 #write contig name and first line after
 for contig in $plasmid_contigs; do
-	grep -A 1 $contig $input >> $out_dir/plasmid_contigs.fasta
+	awk -v contig=$contig 'BEGIN {RS=">"} {ORS="";} index($0,contig)==1 {print ">"$0}' $input >> $out_dir/plasmid_contigs.fasta
 done
 
