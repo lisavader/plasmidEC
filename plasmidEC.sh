@@ -95,7 +95,7 @@ echo "You have selected Enterococcus faecalis as a species; flags -p , -d and -r
 
 elif [[ $species == 'Enterococcus faecium' ]]; then
 #plascope_database_path=${SCRIPT_DIR}/databases/plascope
-#plascope_database_name='E_faecalis_plasmid_db'
+#plascope_database_name='E_faecium_plasmid'
 rfplasmid_model='Enterococcus'
 classifiers='rfplasmid,platon,mlplasmids'
 mlplasmids_model="'""Enterococcus faecium""'"
@@ -190,7 +190,7 @@ if [[ $classifiers = *"plascope"* ]]; then
 		conda create --name plasmidEC_plascope -c bioconda/label/cf201901 plascope=1.3.1 --yes
 	fi
 	conda activate plasmidEC_plascope
-	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d ${plascope_database_path} -n ${plascope_database_name}
+	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d ${plascope_database_path} -n ${plascope_database_name} -s "$species"
 fi
 
 if [[ $classifiers = *"platon"* ]]; then
@@ -239,7 +239,7 @@ fi
 
 conda activate plasmidEC_R
 echo "Combining results..."
-Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir $plasmid_limit
+Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir $plasmid_limit $classifiers
 
 #put results in gplas format
 if [[ $gplas_output = 'true' ]]; then	
