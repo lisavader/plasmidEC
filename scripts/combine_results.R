@@ -4,6 +4,7 @@ arguments = commandArgs(trailingOnly=TRUE)
 output_directory=arguments[1]
 plasmid_limit=arguments[2]
 plasmid_limit=as.integer(plasmid_limit)
+tools=arguments[3]
 
 ##Load results
 all_results_path<-paste(output_directory,"/all_predictions.csv",sep='')
@@ -36,9 +37,15 @@ rfplasmid <- rfplasmid[,-c(2)]
 ##Combine results
 combined <- merge(merge(mlplasmids,rfplasmid,all = TRUE),merge(plascope,platon, all = TRUE),all = TRUE)
 combined <- combined[, colSums(is.na(combined)) != nrow(combined)] #remove column of non-included tool
-#replace NA of mlplasmids with 'chromosome'.if the column exists
-if("mlplasmids" %in% colnames(combined)) {
- combined$mlplasmids<-ifelse(is.na(combined$mlplasmids),'chromosome',as.character(combined$mlplasmids));
+
+#replace NA of mlplasmids with 'chromosome'. If tool was selected.
+check_mlplasmids<-grepl('mlplasmids',tools, fixed=TRUE)
+if (check_mlplasmids=='TRUE'){ 
+  if("mlplasmids" %in% colnames(combined)) {
+    combined$mlplasmids<-ifelse(is.na(combined$mlplasmids),'chromosome',as.character(combined$mlplasmids));
+  } else {
+    combined$mlplasmids<-'chromosome'
+}
 }
 
 #check if the number of rows is the same before and after the merge.
