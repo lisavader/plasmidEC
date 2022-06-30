@@ -5,26 +5,68 @@ set -e
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "../${BASH_SOURCE[1]}" )" &> /dev/null && pwd )
 
-while getopts :i:o:t:d:n: flag; do
+while getopts :i:o:t:d:n:s: flag; do
         case $flag in
                 i) input=$OPTARG;;
                 o) out_dir=$OPTARG;;
 		t) threads=$OPTARG;;
 		d) database_dir=$OPTARG;;
 		n) plascope_database_name=$OPTARG;;
+		s) species=$OPTARG;;
         esac
 done
 
 #make results directory
 mkdir -p $out_dir/plascope_output
 
-#download E. coli database
+#make directory for saving pre-loaded databases
 mkdir -p ${SCRIPT_DIR}/databases/plascope
-if [[ ! -f ${SCRIPT_DIR}/databases/plascope/chromosome_plasmid_db.3.cf ]]; then
+
+#if species is E. coli
+if [[ $species == 'Escherichia coli' ]]; then
+if [[ ! -f ${database_dir}/${plascope_database_name}.3.cf ]]; then
 	echo "Downloading PlaScope E. coli database..."
-	wget -P ${SCRIPT_DIR}/databases/plascope https://zenodo.org/record/1311641/files/chromosome_plasmid_db.tar.gz
-	tar -xzf ${SCRIPT_DIR}/databases/plascope/chromosome_plasmid_db.tar.gz -C ${SCRIPT_DIR}/databases/plascope/
-	rm ${SCRIPT_DIR}/databases/plascope/chromosome_plasmid_db.tar.gz
+	wget -P ${database_dir} https://zenodo.org/record/1311641/files/${plascope_database_name}.tar.gz
+	tar -xzf ${database_dir}/${plascope_database_name}.tar.gz -C ${database_dir}
+	rm ${database_dir}/${plascope_database_name}.tar.gz
+fi
+
+#if species is K. pneumoniae (MODIFY THIS - ZENODO ADDRESS)
+elif [[ $species == 'Klebsiella pneumoniae' ]]; then
+if [[ ! -f ${database_dir}/${plascope_database_name}.3.cf ]]; then
+        echo "Downloading PlaScope K. pneumoniae database..."
+        wget -P ${database_dir} https://zenodo.org/record/1311641/files/K_pneumoniae_plasmid.tar.gz
+        tar -xzf ${database_dir}/K_pneumoniae_plasmid.tar.gz -C ${database_dir}
+        rm ${database_dir}/K_pneumoniae_plasmid.tar.gz
+fi
+
+#if species is P. aeruginosa (MODIFY THIS - ZENODO ADDRESS)
+elif [[ $species == 'Pseudomonas aeruginosa' ]]; then
+if [[ ! -f ${database_dir}/${plascope_database_name}.3.cf ]]; then
+        echo "Downloading PlaScope P. aeruginosa database..."
+        wget -P ${database_dir} https://zenodo.org/record/1311641/files/P_aeruginosa_plasmid.tar.gz
+        tar -xzf ${database_dir}/P_aeruginosa_plasmid.tar.gz -C ${database_dir}
+        rm ${database_dir}/P_aeruginosa_plasmid.tar.gz
+fi
+
+#if species is S. enterica (MODIFY THIS - ZENODO ADDRESS)
+elif [[ $species == 'Salmonella enterica' ]]; then
+echo "got the species"
+if [[ ! -f ${database_dir}/${plascope_database_name}.3.cf ]]; then
+        echo "Downloading PlaScope S. enterica database..."
+        wget -P ${database_dir} https://zenodo.org/record/6769115/files/S_enterica_plasmid.tar.gz
+        tar -xzf ${database_dir}/S_enterica_plasmid.tar.gz -C ${database_dir}
+        rm ${database_dir}/S_enterica_plasmid.tar.gz
+fi
+
+#if species is S. aureus (MODIFY THIS - ZENODO ADDRESS)
+elif [[ $species == 'Staphylococcus aureus' ]]; then
+if [[ ! -f ${database_dir}/${plascope_database_name}.3.cf ]]; then
+        echo "Downloading PlaScope S. enterica database..."
+        wget -P ${database_dir} https://zenodo.org/record/6769599/files/S_aureus_plasmid.tar.gz
+        tar -xzf ${database_dir}/S_aureus_plasmid.tar.gz -C ${database_dir}
+        rm ${database_dir}/S_aureus_plasmid.tar.gz
+fi
 fi
 
 run_plascope(){
