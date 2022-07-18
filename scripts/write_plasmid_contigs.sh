@@ -12,8 +12,6 @@ done
 
 #extract contig names from output
 plasmid_contigs=$(grep '"plasmid"$' "$out_dir"/ensemble_output.csv | cut -d , -f 1 | sed 's/"//g')
-echo "PLASMID CONTIGS ARE.."
-echo ${plasmid_contigs}
 
 #write contig name and first line after
 for contig in $plasmid_contigs; do
