@@ -27,9 +27,17 @@ The only requirement to run plasmidEC is a conda installation (V > 4.10.3).
 ## Installation
 Clone plasmidEC from github:
 ```
-git clone https://github.com/lisavader/plasmidEC.git
+git clone https://github.com/jpaganini/plasmidEC-1.git
 ```
-Upon first time usage, plasmidEC will automatically install its dependencies via conda and download the databases used by the tools. The only prerequisite is a conda installation.
+Move to the new directory:
+```
+mv plasmidEC
+```
+Run plasmidEC:
+```
+bash plasmidEC.sh -i testdata/E_coli_test.fasta -o E_coli_test -s "Escherichia coli"
+```
+Upon first time usage, plasmidEC will automatically install its dependencies via conda and download the databases used by the tools. 
 
 ## Usage
 
@@ -37,7 +45,7 @@ Upon first time usage, plasmidEC will automatically install its dependencies via
 Out of the box, plasmidEC can be used to predict plasmid contigs of _E. coli_, _K. pneumoniae_, _A. baumannii_, _S. enterica_, _P. aeruginosa_, _E. faecium_, _E. faecalis_ and _S. aureus_. You must specify the species using the **-s** flag.
 
 ```
-bash plasmidEC.sh -i testdata/SRR6985737.fasta -o SRR6985737 -s "Escherichia coli"
+bash plasmidEC.sh -i testdata/K_pneumoniae_test.fasta -o K_pneumoniae_test -s "Klebsiella pneumoniae"
 ```
 #### Other species
 It is possible to use plasmidEC for other species. However, the following steps will need to be completed:
