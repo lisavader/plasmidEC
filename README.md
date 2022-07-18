@@ -34,15 +34,15 @@ Upon first time usage, plasmidEC will automatically install its dependencies via
 ## Usage
 
 #### Quick usage
-Out of the box, plasmidEC can be used to predict plasmid contigs of _E. coli_, _K. pneumoniae_, _A. baumannii_, _S. enterica_, _P. aeruginosa_, _E. faecium_, _E. faecalis_ and _S. aureus_. You must specify the species using the -s flag.
+Out of the box, plasmidEC can be used to predict plasmid contigs of _E. coli_, _K. pneumoniae_, _A. baumannii_, _S. enterica_, _P. aeruginosa_, _E. faecium_, _E. faecalis_ and _S. aureus_. You must specify the species using the **-s** flag.
 
 ```
 bash plasmidEC.sh -i testdata/SRR6985737.fasta -o SRR6985737 -s "Escherichia coli"
 ```
 #### Other species
 It is possible to use plasmidEC for other species. However, the following steps will need to be completed:
-- 1. A Plascope model for the desired species will have to be constructed. The location and name of this model is specified by using the -p and -d flags. Instructions on how to do this can be found [here](https://github.com/labgem/PlaScope).
-- 2. An appropiate model for RFPlasmid will need to be selected with the -r flag. RFPlasmid can make plasmid predictions for different [genera](https://github.com/aldertzomer/RFPlasmid/blob/master/specieslist.txt). If you genera is not listed, we recommend using the 'General' model.
+- 1. A Plascope model for the desired species will have to be constructed. The location and name of this model is specified by using the **-p** and **-d** flags. Instructions on how to do this can be found [here](https://github.com/labgem/PlaScope).
+- 2. An appropiate model for RFPlasmid will need to be selected with the **-r** flag. RFPlasmid can make plasmid predictions for different [genera](https://github.com/aldertzomer/RFPlasmid/blob/master/specieslist.txt). If you genera is not listed, we recommend using the 'General' model.
 
 #### All options
 ```
