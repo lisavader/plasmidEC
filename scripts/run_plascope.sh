@@ -35,18 +35,18 @@ fi
 elif [[ $species == 'Klebsiella pneumoniae' ]]; then
 if [[ ! -f ${database_dir}/${plascope_database_name}.3.cf ]]; then
         echo "Downloading PlaScope K. pneumoniae database..."
-        wget -P ${database_dir} https://zenodo.org/record/6851206/files/K_pneumoniae_plasmid.tar.gz
-        tar -xzf ${database_dir}/K_pneumoniae_plasmid.tar.gz -C ${database_dir}
-        rm ${database_dir}/K_pneumoniae_plasmid.tar.gz
+        wget -P ${database_dir} https://zenodo.org/record/6851206/files/K_pneumoniae_plasmid_db.tar.gz
+        tar -xzf ${database_dir}/K_pneumoniae_plasmid_db.tar.gz -C ${database_dir}
+        rm ${database_dir}/K_pneumoniae_plasmid_db.tar.gz
 fi
 
 #if species is P. aeruginosa
 elif [[ $species == 'Pseudomonas aeruginosa' ]]; then
 if [[ ! -f ${database_dir}/${plascope_database_name}.3.cf ]]; then
         echo "Downloading PlaScope P. aeruginosa database..."
-        wget -P ${database_dir} https://zenodo.org/record/6851212/files/P_aeruginosa_plasmid.tar.gz
-        tar -xzf ${database_dir}/P_aeruginosa_plasmid.tar.gz -C ${database_dir}
-        rm ${database_dir}/P_aeruginosa_plasmid.tar.gz
+        wget -P ${database_dir} https://zenodo.org/record/6851212/files/P_aeruginosa_plasmid_db.tar.gz
+        tar -xzf ${database_dir}/P_aeruginosa_plasmid_db.tar.gz -C ${database_dir}
+        rm ${database_dir}/P_aeruginosa_plasmid_db.tar.gz
 fi
 
 #if species is S. enterica
