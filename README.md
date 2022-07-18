@@ -6,26 +6,25 @@ PlasmidEC is an ensemble of plasmid classification tools.
 
 PlasmidEC runs multiple binary classification tools that predict the origin of contigs (plasmid or chromosome). For each contig, it outputs the prediction given by the majority of the tools. PlasmidEC outcompetes individual classifiers, especially for contigs that contain antibiotic resistance genes. 
 
-PlasmidEC is currently available for _E. coli_, _K. pneumoniae_, _A. baumannii_, _S. enterica_, _P. aeruginosa_, _E. faecium_, _E. faecalis_ and _S. aureus_
-
-# Table of contents
+## Table of contents
 * [Requirements](#requirements)
 * [Supported tools](#supported-tools)
 * [Installation](#installation)
+* [Usage](#usage)  
 * [Output files](#output-files)
 * [Compatibility with gplas](#compatibility-with-gplas)
 * [Acknowledgements](#acknowledgements)
 
-# Requirements
+## Requirements
 The only requirement to run plasmidEC is a conda installation (V > 4.10.3).
 
-# Supported tools
+## Supported tools
 - [mlplasmids](https://gitlab.com/sirarredondo/mlplasmids)
 - [PlaScope](https://github.com/labgem/PlaScope)
 - [Platon](https://github.com/oschwengers/platon)
 - [RFPlasmid](https://github.com/aldertzomer/RFPlasmid)
 
-# Installation
+## Installation
 Clone plasmidEC from github:
 ```
 git clone https://github.com/lisavader/plasmidEC.git
@@ -33,6 +32,19 @@ git clone https://github.com/lisavader/plasmidEC.git
 Upon first time usage, plasmidEC will automatically install its dependencies via conda and download the databases used by the tools. The only prerequisite is a conda installation.
 
 ## Usage
+
+#### Quick usage
+Out of the box, plasmidEC can be used to predict plasmid contigs of _E. coli_, _K. pneumoniae_, _A. baumannii_, _S. enterica_, _P. aeruginosa_, _E. faecium_, _E. faecalis_ and _S. aureus_. You must specify the species using the -s flag.
+
+```
+bash plasmidEC.sh -i testdata/SRR6985737.fasta -o SRR6985737 -s "Escherichia coli"
+```
+#### Other species
+It is possible to use plasmidEC for other species. However, the following steps will need to be completed:
+- 1. A Plascope model for the desired species will have to be constructed. The location and name of this model is specified by using the -p and -d flags. Instructions on how to do this can be found [here](https://github.com/labgem/PlaScope).
+- 2. An appropiate model for RFPlasmid will need to be selected with the -r flag. RFPlasmid can make plasmid predictions for different [genera](https://github.com/aldertzomer/RFPlasmid/blob/master/specieslist.txt). If you genera is not listed, we recommend using the 'General' model.
+
+#### All options
 ```
 $ bash plasmidEC.sh -h
 usage: bash plasmidEC.sh [-i INPUT] [-o OUTPUT] [options]
@@ -53,11 +65,6 @@ Optional arguments:
   -m                    Use minority vote to classify contigs as plasmid-derived.
   -f                    Force overwriting of output dir.
   -v                    Display version nr. and exit.
-```
-
-Example:
-```
-bash plasmidEC.sh -i testdata/SRR6985737.fasta -o SRR6985737 -s "Escherichia coli"
 ```
 
 ## Output Files
