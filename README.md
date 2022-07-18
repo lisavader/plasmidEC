@@ -78,7 +78,9 @@ Optional arguments:
 [gplas](https://gitlab.com/mmb-umcu/gplas) is a tool to bin plasmid-predicted contigs based on sequence
 composition, coverage and assembly graph information. Gplas accurately bins predicted plasmid contigs into individual plasmid predictions.
 
-By using the -g flag, plasmidEC provides it's output in a format that is compatible with gplas. This output is located in ${output}/gplas_format/$file_name_plasmid_prediction.tab. 
+By using the **-g** flag, plasmidEC provides it's output in a format that is compatible with gplas. This output will be located in:
+
+${output}/**gplas_format**/${file_name}_plasmid_prediction.tab. 
 
 ## Acknowledgements
 
