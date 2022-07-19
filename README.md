@@ -31,7 +31,7 @@ git clone https://github.com/jpaganini/plasmidEC-1.git
 ```
 Move to the new directory:
 ```
-mv plasmidEC-1
+cd plasmidEC-1
 ```
 Run plasmidEC:
 ```
