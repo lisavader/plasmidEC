@@ -1,4 +1,4 @@
-name: mlplasmids_ec_lv
+name: plasmidEC_mlplasmids
 channels:
   - defaults
   - bioconda

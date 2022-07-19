@@ -1,10 +1,14 @@
 #!/bin/bash
 
-while getopts :i:o:t: flag; do
+#set -x
+set -e
+
+while getopts :i:o:t:s: flag; do
         case $flag in
                 i) input=$OPTARG;;
                 o) out_dir=$OPTARG;;
 		t) threads=$OPTARG;;
+		s) species=$OPTARG;;
         esac
 done
 
@@ -21,7 +25,7 @@ echo "Running RFPlasmid..."
 mkdir $out_dir/rfplasmid_output/tmp
 cp $input $out_dir/rfplasmid_output/tmp
 #run rfplasmid
-rfplasmid --species Enterobacteriaceae --input $out_dir/rfplasmid_output/tmp --jelly --threads $threads --out $out_dir/rfplasmid_output/
+rfplasmid --species ${species} --input $out_dir/rfplasmid_output/tmp --jelly --threads $threads --out $out_dir/rfplasmid_output/
 rm -r $out_dir/rfplasmid_output/tmp
 }
 

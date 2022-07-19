@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#set -x
+#set -e
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 version='1.1'
@@ -9,16 +12,21 @@ cat << EOF
 usage: bash plasmidEC.sh [-i INPUT] [-o OUTPUT] [options]
 
 Mandatory arguments:
-  -i INPUT		input .fasta file
-  -o OUTPUT		output directory
+  -i INPUT		input .fasta file.
+  -o OUTPUT		output directory.
 
 Optional arguments:
-  -h 			display this help message and exit
-  -c CLASSIFIERS	classifiers to be used, in lowercase and separated by a comma (default = plascope,platon,rfplasmid)
-  -t THREADS		nr. of threads used by PlaScope, Platon and RFPlasmid (default = 8)
-  -g			write gplas formatted output
-  -f			force overwriting of output dir
-  -v			display version nr. and exit
+  -h 			Display this help message and exit.
+  -c CLASSIFIERS	Classifiers to be used, in lowercase and separated by a comma.
+  -s SPECIES		Select one of the pre-loaded species ("Escherichia coli", "Klebsiella pneumoniae", "Acinetobacter baumannii", "Salmonella enterica", "Pseudomonas aeruginosa", "Entrococcus faecium", "Enterococcus faecalis", "Staphylococcus aureus").
+  -t THREADS		nr. of threads used by PlaScope, Platon and RFPlasmid (default = 8).
+  -p plascope DB path   Full path for a custom plascope DB. Needed for using plasmidEC with species other than pre-loaded species. Not compatible with -s.
+  -d plascope DB name   Name of the custom plascope DB. Not compatible with -s.
+  -r rfplasmid model    Name of the rfplasmid model selected. Needed for using plasmidEC with species other than pre-loaded species. Not compatible with -s.
+  -g			Write gplas formatted output.
+  -m                    Use minority vote to classify contigs as plasmid-derived.
+  -f			Force overwriting of output dir.
+  -v			Display version nr. and exit.
 
 EOF
 }
@@ -30,18 +38,104 @@ force='false'
 gplas_output='false'
 
 #process flags provided
-while getopts :i:c:o:fgtvh flag; do
+while getopts :i:c:o:d:p:s:r:fgtvhm flag; do
 	case $flag in
 		i) input=$OPTARG;;
 		c) classifiers=$OPTARG;;
+		s) species=$OPTARG;;
                 o) out_dir=$OPTARG;;
 		f) force='true';;
 		g) gplas_output='true';;
+		m) minority_vote='true';;
+                p) plascope_database_path=$OPTARG;;
+		d) plascope_database_name=$OPTARG;;
+		r) rfplasmid_model=$OPTARG;;
 		t) threads=$OPTARG;;
 		v) echo "PlasmidEC v. $version." && exit 0;;
 		h) usage && exit 0;;
 	esac
 done
+
+#Establish default values according to species selected
+if [[ $species == 'Escherichia coli' ]]; then 
+plascope_database_path=${SCRIPT_DIR}/databases/plascope
+plascope_database_name='chromosome_plasmid_db'
+rfplasmid_model='Enterobacteriaceae'
+classifiers='plascope,platon,rfplasmid'
+echo "You have selected the Escherichia coli as a species; flags -p , -d and -r will be ignored"
+
+elif [[ $species == 'Klebsiella pneumoniae' ]]; then
+plascope_database_path=${SCRIPT_DIR}/databases/plascope
+plascope_database_name='K_pneumoniae_plasmid_db'
+rfplasmid_model='Enterobacteriaceae'
+classifiers='plascope,platon,rfplasmid'
+echo "You have selected Klebsiella pneumoniae as a species; flags -p , -d and -r will be ignored"
+
+elif [[ $species == 'Acinetobacter baumannii' ]]; then
+plascope_database_path=${SCRIPT_DIR}/databases/plascope
+#plascope_database_name='abaumannii_plasmid_db'
+rfplasmid_model='Generic'
+classifiers='rfplasmid,platon,mlplasmids'
+mlplasmids_model="'""Acinetobacter baumannii""'"
+echo "You have selected Acinetobacter baumannii as a species; flags -p , -d and -r will be ignored"
+
+elif [[ $species == 'Pseudomonas aeruginosa' ]]; then
+plascope_database_path=${SCRIPT_DIR}/databases/plascope
+plascope_database_name='P_aeruginosa_plasmid_db'
+rfplasmid_model='Pseudomonas'
+echo "You have selected Pseudomonas aeruginosa as a species; flags -p , -d and -r will be ignored"
+
+elif [[ $species == 'Enterococcus faecalis' ]]; then
+#plascope_database_path=${SCRIPT_DIR}/databases/plascope
+#plascope_database_name='E_faecalis_plasmid_db'
+rfplasmid_model='Enterococcus'
+classifiers='rfplasmid,platon,mlplasmids'
+mlplasmids_model="'""Enterococcus faecalis""'"
+echo "You have selected Enterococcus faecalis as a species; flags -p , -d and -r will be ignored"
+
+elif [[ $species == 'Enterococcus faecium' ]]; then
+#plascope_database_path=${SCRIPT_DIR}/databases/plascope
+#plascope_database_name='E_faecium_plasmid'
+rfplasmid_model='Enterococcus'
+classifiers='rfplasmid,platon,mlplasmids'
+mlplasmids_model="'""Enterococcus faecium""'"
+echo "You have selected Enterococcus faecium as a species; flags -p , -d and -r will be ignored"
+
+elif [[ $species == 'Salmonella enterica' ]]; then
+plascope_database_path=${SCRIPT_DIR}/databases/plascope
+plascope_database_name='S_enterica_plasmid_db'
+rfplasmid_model='Generic'
+echo "You have selected Salmonella enterica as a species; -p , -d and -r flags will be ignored"
+
+elif [[ $species == 'Staphylococcus aureus' ]]; then
+plascope_database_path=${SCRIPT_DIR}/databases/plascope
+plascope_database_name='S_aureus_plasmid_db'
+rfplasmid_model='Staphylococcus'
+echo "You have selected Staphylococcus aureus as a species; flags -p , -d and -r will be ignored"
+
+else
+echo "You have not selected a preloaded species; -p , -d and -r flags are mandatory"
+#Check for flags (-p, -d and -r).
+[ -z $plascope_database_path ] && echo "Please provide the path to the directory that contains the PlaScope DB (-p)" && exit 1
+[ -z $plascope_database_name ] && echo "Please provide the name of the PlaScope DB file (-d)" && exit 1
+[ -z $rfplasmid_model ] && echo "Please provide the name of the RFPlasmid model you want to use (-r). Available models can be found in: https://github.com/aldertzomer/RFPlasmid/blob/master/specieslist.txt" && exit 1
+
+#clean the plascope_DB_directory from trailing slash
+plascope_database_path=$(echo ${plascope_database_path} | sed 's#/*$##g')
+
+#check if the plascope_db directory exists
+if [[ -d $plascope_database_path ]]; then
+echo "Plascope DB directory exists"
+else
+echo "Plascope DB directory does not exists, or path is incorrect" && exit 1
+fi
+
+if [[ -f ${plascope_database_path}/${plascope_database_name}.1.cf ]]; then
+echo "Plascope DB file exists"
+else
+echo "Plascope DB file does not exists or name is incorrect" && exit 1
+fi
+fi
 
 #when no flags are provided, display help message
 if [ $OPTIND -eq 1 ]; then
@@ -84,19 +178,21 @@ envs=$(conda env list | awk '{print $1}' )
 if [[ $classifiers = *"mlplasmids"* ]]; then
 	if ! [[ $envs = *"plasmidEC_mlplasmids"* ]]; then
 		echo "Creating conda environment plasmidEC_mlplasmids..."
-		conda env create --file=$SCRIPT_DIR/yml/plasmidEC_mlplasmids.yml --yes
+		conda env create --file=$SCRIPT_DIR/yml/plasmidEC_mlplasmids.yml
 	fi
 	conda activate plasmidEC_mlplasmids
-	bash $SCRIPT_DIR/scripts/run_mlplasmids.sh -i $input -o $out_dir -d $SCRIPT_DIR
+	bash $SCRIPT_DIR/scripts/run_mlplasmids.sh -i $input -o $out_dir -d $SCRIPT_DIR -s "$mlplasmids_model"
 fi
 
 if [[ $classifiers = *"plascope"* ]]; then
 	if ! [[ $envs = *"plasmidEC_plascope"* ]]; then
 		echo "Creating conda environment plasmidEC_plascope..."
 		conda create --name plasmidEC_plascope -c bioconda/label/cf201901 plascope=1.3.1 --yes
+		conda activate plasmidEC_plascope
+		conda install centrifuge=1.0.3=py36pl5.22.0_3 -c bioconda --yes
 	fi
 	conda activate plasmidEC_plascope
-	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d $SCRIPT_DIR
+	bash $SCRIPT_DIR/scripts/run_plascope.sh -i $input -o $out_dir -t $threads -d ${plascope_database_path} -n ${plascope_database_name} -s "$species"
 fi
 
 if [[ $classifiers = *"platon"* ]]; then
@@ -116,7 +212,7 @@ if [[ $classifiers = *"rfplasmid"* ]]; then
 		rfplasmid --initialize
 	fi
 	conda activate plasmidEC_rfplasmid
-	bash $SCRIPT_DIR/scripts/run_rfplasmid.sh -i $input -o $out_dir -t $threads
+	bash $SCRIPT_DIR/scripts/run_rfplasmid.sh -i $input -o $out_dir -t $threads -s ${rfplasmid_model}
 fi
 
 #gather and combine results
@@ -129,13 +225,23 @@ if ! [[ $envs = *"plasmidEC_R"* ]]; then
 	conda create --name plasmidEC_R r=4.1 --yes
 	conda activate plasmidEC_R
 	conda install -c bioconda bioconductor-biostrings=2.60.0 --yes
+	conda install -c conda-forge r-tidyr=1.2.0 --yes
 	conda install -c conda-forge r-plyr=1.8.6 --yes
 	conda install -c conda-forge r-dplyr=1.0.7 --yes
 fi
 
+#Combine results and create final output
+#Check if minority vote option has been selected
+if [[ $minority_vote = 'true' ]]; then
+    plasmid_limit=0
+    echo "You have selected the -m flag. Minority vote for classifying contigs as plasmid will be applied"
+else
+    plasmid_limit=1
+fi
+
 conda activate plasmidEC_R
 echo "Combining results..."
-Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir
+Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir $plasmid_limit $classifiers
 
 #put results in gplas format
 if [[ $gplas_output = 'true' ]]; then	
@@ -149,4 +255,4 @@ fi
 echo "Writing plasmid contigs..."
 bash $SCRIPT_DIR/scripts/write_plasmid_contigs.sh -i $input -o $out_dir
 
-[ -f $out_dir/ensemble_output.csv ] && echo "PlasmidEC finished. Output can be found in: $out_dir" && exit 0
+[ -f $out_dir/ensemble_output.csv ] && echo "PlasmidEC finished successfully. Output can be found in: $out_dir" && exit 0
