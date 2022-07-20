@@ -31,7 +31,7 @@ git clone https://github.com/jpaganini/plasmidEC-1.git
 ```
 Move to the new directory:
 ```
-mv plasmidEC-1
+cd plasmidEC-1
 ```
 Run plasmidEC:
 ```
@@ -64,7 +64,7 @@ Mandatory arguments:
 Optional arguments:
   -h                    Display this help message and exit.
   -c CLASSIFIERS        Classifiers to be used, in lowercase and separated by a comma.
-  -s SPECIES            Select one of the pre-loaded species ("Escherichia coli", "Klebsiella pneumoniae", "Acinetobacter baumannii", "Salmonella enterica", "Pseudomonas aeruginosa", "Entrococcus faecium", "Enterococcus faecalis", "Staphylococcus aureus").
+  -s SPECIES            Select one of the pre-loaded species ("Escherichia coli", "Klebsiella pneumoniae", "Acinetobacter baumannii", "Salmonella enterica", "Pseudomonas aeruginosa", "Enterococcus faecium", "Enterococcus faecalis", "Staphylococcus aureus").
   -t THREADS            nr. of threads used by PlaScope, Platon and RFPlasmid (default = 8).
   -p plascope DB path   Full path for a custom plascope DB. Needed for using plasmidEC with species other than pre-loaded species. Not compatible with -s.
   -d plascope DB name   Name of the custom plascope DB. Not compatible with -s.
