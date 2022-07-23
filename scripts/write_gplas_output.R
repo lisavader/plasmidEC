@@ -48,6 +48,7 @@ gplas_output<-join(gplas_output,contig_lengths)
 
 # create data_frame
 strain_name <-as.character(gplas_output$Genome_id[1])
+strain_name<-gsub("_raw_nodes$","",strain_name)
 gplas_ordered<-gplas_output[,c(8,9,7,1)]
 names(gplas_ordered)<-c('Prob_Chromosome','Prob_Plasmid','Prediction','Contig_name')
 gplas_ordered<-join(gplas_ordered,contig_lengths)
