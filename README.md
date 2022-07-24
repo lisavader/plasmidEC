@@ -58,15 +58,14 @@ bash plasmidEC.sh -i testdata/K_pneumoniae_test.fasta -o K_pneumoniae_test -s "K
 ```
 #### Compatibility with gplas
 
-[gplas](https://gitlab.com/mmb-umcu/gplas) is a tool to bin plasmid-predicted contigs based on sequence
-composition, coverage and assembly graph information. Gplas accurately bins predicted plasmid contigs into individual plasmid predictions.
+[gplas](https://gitlab.com/mmb-umcu/gplas) is a tool that accurately bins predicted plasmid contigs into individual plasmid predictions.
 
-By using the **-g** flag, plasmidEC provides it's output in a format that is compatible with gplas. Use your assembly graph in **.gfa** format as an input for plasmidEC.
+By using the **-g** flag, plasmidEC provides it's output in a format that is compatible with gplas. Use your assembly graph in **.gfa** format as an input.
 
 ```
 bash plasmidEC.sh -i testdata/K_pneumoniae_test.gfa -o K_pneumoniae_test -s "Klebsiella pneumoniae" -g
 ```
-The output is a tab separated file, located at: ${output}/**gplas_format**/
+The output is a tab separated file, located at: ${output}/**gplas_format**/${file_name}_plasmid_prediction.tab
 
 #### Other species
 It is possible to use plasmidEC for other species. However, the following steps will need to be completed:
