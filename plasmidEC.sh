@@ -12,17 +12,18 @@ cat << EOF
 usage: bash plasmidEC.sh [-i INPUT] [-o OUTPUT] [options]
 
 Mandatory arguments:
-  -i INPUT		input .fasta file.
+  -i INPUT		input .fasta or .gfa file.
   -o OUTPUT		output directory.
 
 Optional arguments:
   -h 			Display this help message and exit.
-  -c CLASSIFIERS	Classifiers to be used, in lowercase and separated by a comma.
+  -c CLASSIFIERS	Classifiers to be used, in lowercase and separated by a comma. 
   -s SPECIES		Select one of the pre-loaded species ("Escherichia coli", "Klebsiella pneumoniae", "Acinetobacter baumannii", "Salmonella enterica", "Pseudomonas aeruginosa", "Enterococcus faecium", "Enterococcus faecalis", "Staphylococcus aureus").
+  -l LENGTH 		Minimum length of contigs to be classified (default=1000)
   -t THREADS		nr. of threads used by PlaScope, Platon and RFPlasmid (default = 8).
-  -p plascope DB path   Full path for a custom plascope DB. Needed for using plasmidEC with species other than pre-loaded species. Not compatible with -s.
-  -d plascope DB name   Name of the custom plascope DB. Not compatible with -s.
-  -r rfplasmid model    Name of the rfplasmid model selected. Needed for using plasmidEC with species other than pre-loaded species. Not compatible with -s.
+  -p PLASCOPE DB PATH   Full path for a custom plascope DB. Needed for using plasmidEC with species other than pre-loaded species. Not compatible with -s.
+  -d PLASCOPE DB NAME   Name of the custom plascope DB. Not compatible with -s.
+  -r RFPLASMID MODEL    Name of the rfplasmid model selected. Needed for using plasmidEC with species other than pre-loaded species. Not compatible with -s.
   -g			Write gplas formatted output.
   -m                    Use minority vote to classify contigs as plasmid-derived.
   -f			Force overwriting of output dir.
@@ -38,12 +39,13 @@ force='false'
 gplas_output='false'
 
 #process flags provided
-while getopts :i:c:o:d:p:s:r:fgtvhm flag; do
+while getopts :i:c:o:d:p:s:r:l:fgtvhm flag; do
 	case $flag in
 		i) input=$OPTARG;;
 		c) classifiers=$OPTARG;;
 		s) species=$OPTARG;;
                 o) out_dir=$OPTARG;;
+    l) length=$OPTARG;;
 		f) force='true';;
 		g) gplas_output='true';;
 		m) minority_vote='true';;
@@ -153,10 +155,19 @@ source $CONDA_PATH/etc/profile.d/conda.sh || echo "Error: Unable to load conda b
 [ -z $input ] && echo "Please provide the path to your input folder (-i)" && exit 1 
 [ -z $out_dir ] && echo "Please provide the name of the output directory (-o)" && exit 1
 
+#Check if input file is fasta or gfa format
 if [[ $input == *.fasta ]]; then
 	echo "Found input file at: $input"
-else
-	echo "Error: No .fasta file found at: $input" && exit 1
+	format="fasta"
+	name="$(basename -- $input .fasta)"
+elif [[ $input == *.gfa ]]; then
+  echo "Found input file at: $input"
+  echo "The file is in .gfa format. plasmidEC will convert it to FASTA format."
+  format="gfa"
+  name="$(basename -- $input .gfa)"
+  echo ${name}
+  else
+	echo "Error: No .fasta or .gfa file found at: $input" && exit 1
 fi
 
 #create output directory
@@ -170,6 +181,27 @@ if [[ -d $out_dir ]]; then
 else
 	mkdir $out_dir
 fi
+
+#---Filter by length, move and (if required) convert format of input file.---
+#Check if length is a valid value
+if [[ -d $length ]]; then
+  #check if length is a positive value
+  if [ "$length" > 0 ]; then
+    echo "You have selected to filter-out contigs smaller than: "${length}
+  else
+    echo "You have selected an invalid value for -l. Please select a positive integer"
+  fi
+else
+  echo "PlasmidEC will classify only contigs larger than 1000bp. Select a different cut-off using the -l flag"
+  length=1000
+fi
+
+#filter and move
+bash $SCRIPT_DIR/scripts/extract_nodes.sh -i ${input} -o ${out_dir} -l ${length} -f ${format}
+
+#change the input to a new one
+input=${out_dir}/${name}.fasta
+echo ${input}
 
 #save list of conda envs already existing
 envs=$(conda env list | awk '{print $1}' )
