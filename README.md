@@ -16,7 +16,7 @@ PlasmidEC runs multiple binary classification tools that predict the origin of c
 * [Acknowledgements](#acknowledgements)
 
 ## Requirements
-The only requirement to run plasmidEC is a conda installation (V > 4.10.3).
+The only requirement to run plasmidEC is a conda installation (V >= 4.10.3).
 
 ## Supported tools
 - [mlplasmids](https://gitlab.com/sirarredondo/mlplasmids)
@@ -44,6 +44,8 @@ Upon first time usage, plasmidEC will automatically install its dependencies via
 #### Quick usage
 Out of the box, plasmidEC can be used to predict plasmid contigs of _E. coli_, _K. pneumoniae_, _A. baumannii_, _S. enterica_, _P. aeruginosa_, _E. faecium_, _E. faecalis_ and _S. aureus_. You must specify the species using the **-s** flag.
 
+As input, you can provide a **.fasta** or **.gfa** file.
+
 ```
 bash plasmidEC.sh -i testdata/K_pneumoniae_test.fasta -o K_pneumoniae_test -s "Klebsiella pneumoniae"
 ```
@@ -58,13 +60,14 @@ $ bash plasmidEC.sh -h
 usage: bash plasmidEC.sh [-i INPUT] [-o OUTPUT] [options]
 
 Mandatory arguments:
-  -i INPUT              input .fasta file
+  -i INPUT              input .fasta or .gfa file
   -o OUTPUT             output directory
 
 Optional arguments:
   -h                    Display this help message and exit.
   -c CLASSIFIERS        Classifiers to be used, in lowercase and separated by a comma.
   -s SPECIES            Select one of the pre-loaded species ("Escherichia coli", "Klebsiella pneumoniae", "Acinetobacter baumannii", "Salmonella enterica", "Pseudomonas aeruginosa", "Enterococcus faecium", "Enterococcus faecalis", "Staphylococcus aureus").
+  -l LENGTH             Minimum length of contigs to be classified (default = 1000).
   -t THREADS            nr. of threads used by PlaScope, Platon and RFPlasmid (default = 8).
   -p plascope DB path   Full path for a custom plascope DB. Needed for using plasmidEC with species other than pre-loaded species. Not compatible with -s.
   -d plascope DB name   Name of the custom plascope DB. Not compatible with -s.
