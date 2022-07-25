@@ -60,7 +60,9 @@ bash plasmidEC.sh -i testdata/K_pneumoniae_test.fasta -o K_pneumoniae_test -s "K
 
 [gplas](https://gitlab.com/mmb-umcu/gplas) is a tool that accurately bins predicted plasmid contigs into individual plasmid predictions.
 
-By using the **-g** flag, plasmidEC provides it's output in a format that is compatible with gplas. Use your assembly graph in **.gfa** format as an input.
+By using the **-g** flag, plasmidEC provides it's output in a format that is compatible with gplas. 
+
+Use your assembly graph in **.gfa** format as an input.
 
 ```
 bash plasmidEC.sh -i testdata/K_pneumoniae_test.gfa -o K_pneumoniae_test -s "Klebsiella pneumoniae" -g
