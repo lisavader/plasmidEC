@@ -192,7 +192,7 @@ if [[ -d $length ]]; then
     echo "You have selected an invalid value for -l. Please select a positive integer"
   fi
 else
-  echo "PlasmidEC will classify only contigs larger than 1000bp. Select a different cut-off using the -l flag"
+  echo "PlasmidEC will classify only contigs larger than 1000bp. You can select a different cut-off using the -l flag"
   length=1000
 fi
 
