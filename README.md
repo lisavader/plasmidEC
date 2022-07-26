@@ -167,9 +167,9 @@ grep '>' E_coli_test/plasmid_contigs.fasta
 Concatenated predictions of the individual classifiers (intermediate file).
 
 ```
-head -n 5 E_coli_test/gplas_format/all_predictions.csv
+head -n 5 E_coli_test/all_predictions.csv
 ```
-| Contig\_name                              | Prediction | Tool     | Name          |
+|                                           |            |          |               |
 | ----------------------------------------- | ---------- | -------- | ------------- |
 | S7\_LN:i:209197\_dp:f:1.060027589194678   | chromosome | plascope | E\_coli\_test |
 | S1\_LN:i:346767\_dp:f:0.9966562474408179  | chromosome | plascope | E\_coli\_test |
