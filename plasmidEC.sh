@@ -157,15 +157,14 @@ source $CONDA_PATH/etc/profile.d/conda.sh || echo "Error: Unable to load conda b
 
 #Check if input file is fasta or gfa format
 if [[ $input == *.fasta ]]; then
-	echo "Found input file at: $input"
+	echo -e "\nFound input file at: $input"
 	format="fasta"
 	name="$(basename -- $input .fasta)"
 elif [[ $input == *.gfa ]]; then
-  echo "Found input file at: $input"
+  echo -e "\nFound input file at: $input"
   echo "The file is in .gfa format. plasmidEC will convert it to FASTA format."
   format="gfa"
   name="$(basename -- $input .gfa)"
-  echo ${name}
   else
 	echo "Error: No .fasta or .gfa file found at: $input" && exit 1
 fi
@@ -175,11 +174,13 @@ if [[ -d $out_dir ]]; then
 	if [[ $force = 'true' ]]; then	
 		rm -r $out_dir
 		mkdir $out_dir
+		mkdir $out_dir/logs
 	else
-		printf "Output directory already exists: $out_dir\nUse the force option (-f) to overwrite.\n" && exit 1
+		printf "\nOutput directory already exists: $out_dir\nUse the force option (-f) to overwrite.\n" && exit 1
 	fi	
 else
 	mkdir $out_dir
+        mkdir $out_dir/logs
 fi
 
 #---Filter by length, move and (if required) convert format of input file.---
@@ -187,12 +188,12 @@ fi
 if [[ -d $length ]]; then
   #check if length is a positive value
   if [ "$length" > 0 ]; then
-    echo "You have selected to filter-out contigs smaller than: "${length}
+    echo -e "\nYou have selected to filter-out contigs smaller than: "${length}
   else
-    echo "You have selected an invalid value for -l. Please select a positive integer"
+    echo -e "\nYou have selected an invalid value for -l. Please select a positive integer"
   fi
 else
-  echo "PlasmidEC will classify only contigs larger than 1000bp. You can select a different cut-off using the -l flag"
+  echo -e "\nPlasmidEC will classify only contigs larger than 1000bp. You can select a different cut-off using the -l flag"
   length=1000
 fi
 
@@ -201,7 +202,6 @@ bash $SCRIPT_DIR/scripts/extract_nodes.sh -i ${input} -o ${out_dir} -l ${length}
 
 #change the input to a new one
 input=${out_dir}/${name}.fasta
-echo ${input}
 
 #save list of conda envs already existing
 envs=$(conda env list | awk '{print $1}' )
@@ -209,7 +209,7 @@ envs=$(conda env list | awk '{print $1}' )
 #run specified tools, create conda env if not yet existing
 if [[ $classifiers = *"mlplasmids"* ]]; then
 	if ! [[ $envs = *"plasmidEC_mlplasmids"* ]]; then
-		echo "Creating conda environment plasmidEC_mlplasmids..."
+		echo -e "\nCreating conda environment plasmidEC_mlplasmids. This one might take some time, please be patient..."
 		conda env create --file=$SCRIPT_DIR/yml/plasmidEC_mlplasmids.yml
 	fi
 	conda activate plasmidEC_mlplasmids
@@ -218,7 +218,7 @@ fi
 
 if [[ $classifiers = *"plascope"* ]]; then
 	if ! [[ $envs = *"plasmidEC_plascope"* ]]; then
-		echo "Creating conda environment plasmidEC_plascope..."
+		echo -e "\nCreating conda environment plasmidEC_plascope."
 		conda create --name plasmidEC_plascope -c bioconda/label/cf201901 plascope=1.3.1 --yes
 		conda activate plasmidEC_plascope
 		conda install centrifuge=1.0.3=py36pl5.22.0_3 -c bioconda --yes
@@ -229,7 +229,7 @@ fi
 
 if [[ $classifiers = *"platon"* ]]; then
 	if ! [[ $envs = *"plasmidEC_platon"* ]]; then
-		echo "Creating conda environment plasmidEC_platon..."
+		echo -e "\nCreating conda environment plasmidEC_platon."
 		conda create --name plasmidEC_platon -c bioconda platon=1.6 --yes
 	fi
 	conda activate plasmidEC_platon
@@ -238,7 +238,7 @@ fi
 
 if [[ $classifiers = *"rfplasmid"* ]]; then
 	if ! [[ $envs = *"plasmidEC_rfplasmid"* ]]; then
-		echo "Creating conda environment plasmidEC_rfplasmid..."
+		echo -e "\nCreating conda environment plasmidEC_rfplasmid. This one might take sometime, please be patient..."
 		conda create --name plasmidEC_rfplasmid -c bioconda rfplasmid=0.0.18 --yes
 		conda activate plasmidEC_rfplasmid
 		rfplasmid --initialize
@@ -253,7 +253,7 @@ bash $SCRIPT_DIR/scripts/gather_results.sh -i $input -c $classifiers -o $out_dir
 
 #create an environment for running r codes
 if ! [[ $envs = *"plasmidEC_R"* ]]; then
-	echo "Creating conda environment plasmidEC_R..."
+	echo -e "\nCreating conda environment plasmidEC_R."
 	conda create --name plasmidEC_R r=4.1 --yes
 	conda activate plasmidEC_R
 	conda install -c bioconda bioconductor-biostrings=2.60.0 --yes
@@ -266,25 +266,25 @@ fi
 #Check if minority vote option has been selected
 if [[ $minority_vote = 'true' ]]; then
     plasmid_limit=0
-    echo "You have selected the -m flag. Minority vote for classifying contigs as plasmid will be applied"
+    echo -e "\nYou have selected the -m flag. Minority vote for classifying contigs as plasmid will be applied"
 else
     plasmid_limit=1
 fi
 
 conda activate plasmidEC_R
-echo "Combining results..."
+echo -e "\nCombining results..."
 Rscript $SCRIPT_DIR/scripts/combine_results.R $out_dir $plasmid_limit $classifiers
 
 #put results in gplas format
 if [[ $gplas_output = 'true' ]]; then	
 	#create a directory for the gplas output format
 	mkdir $out_dir/gplas_format
-	echo "Writing gplas output..."
+	echo -e "\nWriting gplas output..."
 	Rscript $SCRIPT_DIR/scripts/write_gplas_output.R $input $out_dir
 fi
 
 #write fasta file with plasmid contigs
-echo "Writing plasmid contigs..."
+echo -e "\nWriting plasmid contigs..."
 bash $SCRIPT_DIR/scripts/write_plasmid_contigs.sh -i $input -o $out_dir
 
-[ -f $out_dir/ensemble_output.csv ] && echo "PlasmidEC finished successfully. Output can be found in: $out_dir" && exit 0
+[ -f $out_dir/ensemble_output.csv ] && echo -e "\nPlasmidEC finished successfully. Output can be found in: $out_dir" && exit 0
