@@ -43,6 +43,8 @@ bash plasmidEC.sh -i testdata/E_coli_test.fasta -o E_coli_test -s "Escherichia c
 ```
 Upon first time usage, plasmidEC will automatically install its dependencies via conda and download the databases used by the tools. 
 
+*Note: Since several databases will be downloaded and at least 3 different tools will are required, the installation of plasmidEC might take some time (~20 min), depending on your internet bandwith.*  
+
 ## Usage
 
 ### Input
