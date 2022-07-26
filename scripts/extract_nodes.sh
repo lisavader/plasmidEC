@@ -14,7 +14,6 @@ done
 
 if [ "$format" == 'gfa' ]; then
 name="$(basename -- $input .gfa)"
-#dirname="$(dirname $input)"
 awk '{{if($1 == "S") print ">"$1$2"_"$4"_"$5"\n"$3}}' ${input} >> ${out_dir}/${name}_unfiltered.fasta 
 awk -v min=${length} 'BEGIN {{RS = ">" ; ORS = ""}} length($2) >= min {{print ">"$0}}' ${out_dir}/${name}_unfiltered.fasta > ${out_dir}/${name}.fasta
 rm ${out_dir}/${name}_unfiltered.fasta

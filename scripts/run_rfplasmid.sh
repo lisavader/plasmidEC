@@ -14,12 +14,15 @@ done
 
 mkdir -p $out_dir/rfplasmid_output
 
+
+echo -e "\nRunning RFPlasmid..."
+echo "Find logs and errors at ${out_dir}/logs/rfplasmid*"
+
 run_rfplasmid(){
 input=$1
 out_dir=$2
 threads=$3
-
-echo "Running RFPlasmid..."
+species=$4
 
 #copy file to tmp direcory (rfplasmid only takes directories as input)
 mkdir $out_dir/rfplasmid_output/tmp
@@ -29,4 +32,4 @@ rfplasmid --species ${species} --input $out_dir/rfplasmid_output/tmp --jelly --t
 rm -r $out_dir/rfplasmid_output/tmp
 }
 
-run_rfplasmid $input $out_dir $threads
+run_rfplasmid $input $out_dir $threads $species 1> ${out_dir}/logs/rfplasmid_log.txt 2> ${out_dir}/logs/rfplasmid_err.txt

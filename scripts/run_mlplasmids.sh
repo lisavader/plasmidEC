@@ -36,4 +36,7 @@ name=$(basename $input .fasta)
 Rscript $home_dir/tools/mlplasmids/scripts/run_mlplasmids.R $input ${out_dir}/mlplasmids_output/${name}.tsv 0.5 "$species_model"
 }
 
-run_mlplasmids $input $out_dir
+echo -e "\nRunning mlplasmids..."
+echo "Find logs and errors at ${out_dir}/logs/mlplasmids*"
+
+run_mlplasmids $input $out_dir 1> ${out_dir}/logs/mlplasmids_log.txt 2> ${out_dir}/logs/mlplasmids_err.txt

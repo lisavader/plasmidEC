@@ -35,5 +35,8 @@ name=$(basename $input .fasta)
 platon --db $home_dir/databases/platon/db --output $out_dir/platon_output/$name --threads $threads $input
 }
 
-run_platon $input $out_dir $threads
+
+echo -e "\nRunning Platon..."
+echo "Find logs and errors at ${out_dir}/logs/platon*"
+run_platon $input $out_dir $threads 1> ${out_dir}/logs/platon_log.txt 2> ${out_dir}/logs/platon_err.txt
 

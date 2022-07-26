@@ -81,4 +81,7 @@ name=$(basename $input .fasta)
 plaScope.sh --fasta $input -o $out_dir/plascope_output --db_dir $database_dir --db_name ${plascope_database_name} --sample $name -t $threads --no-banner
 }
 
-run_plascope $input $out_dir $threads $plascope_database_name
+echo -e "\nRunning PlaScope..."
+echo "Find logs and errors at ${out_dir}/logs/plascope*"
+
+run_plascope $input $out_dir $threads $plascope_database_name 1> ${out_dir}/logs/plascope_log.txt 2> ${out_dir}/logs/plascope_err.txt
