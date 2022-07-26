@@ -20,5 +20,5 @@ awk -v min=${length} 'BEGIN {{RS = ">" ; ORS = ""}} length($2) >= min {{print ">
 rm ${out_dir}/${name}_unfiltered.fasta
 else
 name="$(basename -- $input .fasta)"
-awk -v min=${length} 'BEGIN {{RS = ">" ; ORS = ""}} length($2) >= min {{print ">"$0}}' ${input} > ${out_dir}/${name}.fasta
+awk -v min=${length} 'BEGIN {{RS = ">[^\n]+\n" ; ORS = ""}} length() >= min {printf "%s", prt $0} {prt = RT}' ${input} > ${out_dir}/${name}.fasta
 fi
