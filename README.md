@@ -1,4 +1,6 @@
-**This repository is currently not actively developed! The latest version of PlasmidEC is maintained at [gitlab.com/mmb-umcu/plasmidEC](https://gitlab.com/mmb-umcu/plasmidec)**. 
+**This repository is currently not actively developed!**
+
+**The latest version of PlasmidEC is maintained at [gitlab.com/mmb-umcu/plasmidEC](https://gitlab.com/mmb-umcu/plasmidec)**. 
 
 
 
@@ -104,7 +106,8 @@ It is possible to use plasmidEC for other species. However, the following steps 
 $ bash plasmidEC.sh -h
 usage: bash plasmidEC.sh [-i INPUT] [-o OUTPUT] [options]
 
-Mandatory arguments:
+Mandatory arguments:**This repository is currently not actively developed! The latest version of PlasmidEC is maintained at [gitlab.com/mmb-umcu/plasmidEC](https://gitlab.com/mmb-umcu/plasmidec)**. 
+
   -i INPUT              input .fasta or .gfa file
   -o OUTPUT             output directory
 
